@@ -2,7 +2,8 @@ NAME = n-puzzle
 
 SDIR = ./
 
-SRC =
+SRC = 	$(SDIR)main.cpp \
+		$(SDIR)Node.class.cpp
 
 OBJ = $(SRC:.cpp=.o)
 
