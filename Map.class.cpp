@@ -57,14 +57,26 @@ Map::Map( size_t const size, std::string **input ) : size(size) {
 			steps = size - offset;
 		}
 
-		if (direction == 0)
+		switch (direction) {
+			case 0:
 			x++;
-		else if (direction == 1)
+			break;
+			case 1:
 			y++;
-		else if (direction == 2)
+			break;
+			case 2:
 			x--;
-		else if (direction == 3)
+			break;
+			case 3:
 			y--;
+			break;
+			default:
+			break;
+		}
+		// if (direction == 0)
+		// else if (direction == 1)
+		// else if (direction == 2)
+		// else if (direction == 3)
 
 		i++;
 	}
@@ -81,7 +93,6 @@ Map::Map( size_t const size, std::string **input ) : size(size) {
 				std::cout << "ERROR" << std::endl;
 			} else {
 				this->array[y][x] = Point( value, x, y, finalCoords[0], finalCoords[1] );
-				std::cout << this->array[y][x].toString();
 			}
 		}
 	}
@@ -120,23 +131,23 @@ Map::~Map( void ) {
 /* MEMBER FUNCTIONS ==========================================================*/
 
 int		Map::getFinalPosition(
-size_t const value,
-size_t **map,
-size_t const size,
-size_t *finalCoords ) {
-	for (size_t i = 0; i < size; i++) {
-		for (size_t j = 0; j < size; j++) {
-			if (value == map[i][j]) {
-				finalCoords[0] = j;
-				finalCoords[1] = i;
-				return (0);
+	size_t const value,
+	size_t **map,
+	size_t const size,
+	size_t *finalCoords ) {
+		for (size_t i = 0; i < size; i++) {
+			for (size_t j = 0; j < size; j++) {
+				if (value == map[i][j]) {
+					finalCoords[0] = j;
+					finalCoords[1] = i;
+					return (0);
+				}
 			}
 		}
+		return (-1);
 	}
-	return (-1);
-}
 
-/* NON MEMBER FUNCTIONS ======================================================*/
+	/* NON MEMBER FUNCTIONS ======================================================*/
 
 
-/* OPERATOR ==================================================================*/
+	/* OPERATOR ==================================================================*/

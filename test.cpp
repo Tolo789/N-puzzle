@@ -31,8 +31,9 @@ std::string		**treatInput(std::string input) {
 }
 
 int		main(int ac, char **av) {
-	std::string **ret = treatInput("1 2 3\n4 5 6\n7 8 0");
+	std::string **ret = treatInput("1 2 3\n4 0 6\n7 8 5");
 	Map *map = new Map(3, ret);
+	std::cout << map->array[1][1].toString();
 	/*
 		do things
 		.....
