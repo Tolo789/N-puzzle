@@ -126,29 +126,29 @@ void Node::SetPuzzleSize(size_t newSize) {
 	}
 
 	// save coords to find references faster
-	std::map<size_t, size_t[2]> newCoordMap;
-	size_t tmp[2];
+	// std::map<size_t, size_t[2]> newCoordMap;
+	std::array<size_t, 2> tmp;
 	y = 0;
 	while (y < newSize) {
 		x = 0;
 		while (x < newSize) {
 			tmp[0] = x;
 			tmp[1] = y;
-			newCoordMap.insert(std::pair<size_t, size_t[2]>(map[y][x], tmp));
+			// Node::coordMap.insert(std::pair<size_t, std::array<size_t, 2>(map[y][x], tmp));
 			x++;
 		}
 		std::cout << '\n';
 		y++;
 	}
-	Node::coordMap = newCoordMap;
+	// Node::coordMap = newCoordMap;
 }
 
-size_t *Node::GetNumberFinalPos(size_t number) {
-	std::map<size_t, size_t[2]>::iterator it = Node::coordMap.find(number);
+std::array<size_t, 2> Node::GetNumberFinalPos(size_t number) {
+	std::map<size_t, std::array<size_t, 2> >::iterator it = Node::coordMap.find(number);
 
-	if (it != Node::coordMap.end())
+	// if (it != Node::coordMap.end())
 		return it->second;
-	return NULL;
+	// return NULL;
 }
 
 std::string const Node::serialize(void) const {
@@ -176,7 +176,7 @@ std::string const Node::serialize(void) const {
 size_t Node::puzzleSize = 0;
 size_t Node::heurChoice = 0;
 
-std::map<size_t, size_t[2]> Node::coordMap;
+std::map<size_t, std::array<size_t, 2> > Node::coordMap;
 std::string Node::finalConfig = "";
 
 // === END STATICVARS ==========================================================

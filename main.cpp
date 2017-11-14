@@ -14,10 +14,13 @@ int main(void) {
 	Node::SetPuzzleSize(newSize);
 
 	size_t i = 0;
-	size_t *pos;
+	std::array<size_t, 2> pos;
 	while (i < newSize * newSize) {
 		pos = Node::GetNumberFinalPos(i);
-		std::cout << "Coord for " << i << ":" << "\tx = " << pos[0] << "\ty = " << pos[1] << std::endl;
+		// if (pos)
+		// 	std::cout << "Coord for " << i << ":" << "\tx = " << pos[0] << "\ty = " << pos[1] << std::endl;
+		// else
+		// 	std::cout << "Coord for " << i << " not found" << std::endl;
 		i++;
 	}
 
