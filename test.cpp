@@ -1,6 +1,7 @@
 #include <vector>
 #include <string>
 #include <sstream>
+#include <iostream>
 
 #include "Map.class.hpp"
 
@@ -32,8 +33,22 @@ std::string		**treatInput(std::string input) {
 
 int		main(int ac, char **av) {
 	std::string **ret = treatInput("1 2 3\n4 0 6\n7 8 5");
-	Map *map = new Map(3, ret);
-	std::cout << map->array[1][1].toString();
+	Map *mapOne = new Map(3, ret);
+
+	// find specific point in map
+	Point tmp = mapOne->points.find(4)->second;
+	std::cout << std::endl << "Test for find in map:" << std::endl;
+	std::cout << tmp.toString();
+	// test if map is well linked with array
+	std::cout << mapOne->array[tmp.y_current][tmp.x_current] << std::endl;
+
+	// iter over all points
+	std::cout << std::endl << "Printing all points" << std::endl;
+	std::map<size_t, Point>::iterator it;
+	for (it = mapOne->points.begin(); it != mapOne->points.end(); it++) {
+		std::cout << (it->second).toString() << std::endl;
+	}
+
 	/*
 		do things
 		.....
