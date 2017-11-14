@@ -1,6 +1,8 @@
 #ifndef POINT_CLASS_HPP
 # define POINT_CLASS_HPP
 
+# include <iostream>
+
 class Point {
 
 private:
@@ -8,18 +10,18 @@ private:
 protected:
 
 public:
-	unsigned int	value;
-	unsigned int	x_current;
-	unsigned int	y_current;
-	unsigned int	x_final;
-	unsigned int	y_final;
+	size_t	value;
+	size_t	x_current;
+	size_t	y_current;
+	size_t	x_final;
+	size_t	y_final;
 
 	Point( void );
-	Point( unsigned int const value,
-		unsigned int const x_current,
-		unsigned int const y_current,
-		unsigned int const x_final,
-		unsigned int const y_final );
+	Point( size_t const value,
+		size_t const x_current,
+		size_t const y_current,
+		size_t const x_final,
+		size_t const y_final );
 	Point( Point const & src );
 	~Point( void );
 

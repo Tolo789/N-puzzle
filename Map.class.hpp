@@ -13,10 +13,10 @@ private:
 protected:
 
 public:
-	unsigned int		size;
+	size_t		size;
 	Point				**array;
 
-	Map( unsigned int const size, std::string const input );
+	Map( size_t const size, std::string const input );
 	Map( Map const & src );
 	~Map( void );
 

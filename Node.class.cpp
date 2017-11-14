@@ -11,7 +11,7 @@ Node::Node(void) {
 	return ;
 }
 
-Node::Node(std::string configuration, unsigned int depth, Node *prevNode) : configuration(configuration), depth(depth), prevNode(prevNode) {
+Node::Node(std::string configuration, size_t depth, Node *prevNode) : configuration(configuration), depth(depth), prevNode(prevNode) {
 	// TODO
 	// std::cout << "Node standard constructor called" << std::endl;
 	this->score = 0;
@@ -58,20 +58,20 @@ std::ostream & operator<<(std::ostream & o, Node const & rhs) {
 
 // === OTHERS ==================================================================
 /*
-void Node::SetPuzzleSize(unsigned int newSize) {
+void Node::SetPuzzleSize(size_t newSize) {
 	Node::puzzleSize = newSize;
 
 	std::stringstream newConfig;
 	// double root = sqrt(newSize);
-	unsigned int i = 1;
+	size_t i = 1;
 	int direction = 0; // 0 = right, 1 = down, 2 = left, 3 = up
-	unsigned int offset = 0;
-	unsigned int steps = newSize - offset;
+	size_t offset = 0;
+	size_t steps = newSize - offset;
 	int times = 1; // first time
-	unsigned int max = (newSize * newSize) - 1;
-	unsigned int map[newSize][newSize];
-	unsigned int x = 0;
-	unsigned int y = 0;
+	size_t max = (newSize * newSize) - 1;
+	size_t map[newSize][newSize];
+	size_t x = 0;
+	size_t y = 0;
 
 	// set to zero
 	y = 0;
@@ -117,16 +117,16 @@ void Node::SetPuzzleSize(unsigned int newSize) {
 	}
 }
 */
-void Node::SetPuzzleSize(unsigned int size) {
+void Node::SetPuzzleSize(size_t size) {
 	Node::puzzleSize = size;
 
-	unsigned int	map[size * size];
+	size_t	map[size * size];
 	int		v[2] = {1, 0};
-	unsigned int	index = 0;
-	unsigned int	i = 0;
-	unsigned int	offset = 0;
-	unsigned int	x = 0;
-	unsigned int	y = 0;
+	size_t	index = 0;
+	size_t	i = 0;
+	size_t	offset = 0;
+	size_t	x = 0;
+	size_t	y = 0;
 
 	while (i < (size * size) - 1) {
 		index = x + y * size;
@@ -147,7 +147,7 @@ void Node::SetPuzzleSize(unsigned int size) {
 			x = offset;
 		}
 	}
-	// for (unsigned int i = 0; i < size; i++) {
+	// for (size_t i = 0; i < size; i++) {
 	// 	std::cout << " " << map[i];
 	// 	if (!(i % size)) {
 	// 		std::cout << std::endl;
@@ -155,7 +155,7 @@ void Node::SetPuzzleSize(unsigned int size) {
 	// }
 }
 
-// void Node::SetFinalConfig(unsigned int size) {
+// void Node::SetFinalConfig(size_t size) {
 // 	int		offset_x = 0;
 // 	int		offset_y = 0;
 // 	int		x = 1;
@@ -190,8 +190,8 @@ std::string const Node::serialize(void) const {
 
 // === STATICVARS ==============================================================
 
-unsigned int Node::puzzleSize = 0;
-unsigned int Node::heurChoice = 0;
+size_t Node::puzzleSize = 0;
+size_t Node::heurChoice = 0;
 std::string Node::finalConfig = "";
 
 // === END STATICVARS ==========================================================

@@ -1,18 +1,19 @@
 #ifndef NODE_HPP
 # define NODE_HPP
+
 # include <iostream>
 
 class Node {
 
 public:
-	static unsigned int puzzleSize;
-	static unsigned int heurChoice;
+	static size_t puzzleSize;
+	static size_t heurChoice;
 
-	static void SetPuzzleSize(unsigned int newSize);
+	static void SetPuzzleSize(size_t newSize);
 
 	Node(void);
 	Node(Node const & src);
-	Node(std::string configuration, unsigned int depth, Node *prevNode);
+	Node(std::string configuration, size_t depth, Node *prevNode);
 	~Node(void);
 
 	Node& operator=(Node const & rhs);
@@ -22,11 +23,11 @@ public:
 private:
 	static std::string finalConfig;
 
-	unsigned int GetScore(void);
+	size_t GetScore(void);
 
 	std::string configuration;
-	unsigned int depth;
-	unsigned int score;
+	size_t depth;
+	size_t score;
 	Node *prevNode;
 
 };
