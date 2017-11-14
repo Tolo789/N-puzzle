@@ -5,14 +5,14 @@
 class Node {
 
 public:
-	static size_t puzzleSize;
-	static size_t heurChoice;
+	static unsigned int puzzleSize;
+	static unsigned int heurChoice;
 
-	static void SetPuzzleSize(size_t newSize);
+	static void SetPuzzleSize(unsigned int newSize);
 
 	Node(void);
 	Node(Node const & src);
-	Node(std::string configuration, size_t depth, Node *prevNode);
+	Node(std::string configuration, unsigned int depth, Node *prevNode);
 	~Node(void);
 
 	Node& operator=(Node const & rhs);
@@ -22,11 +22,11 @@ public:
 private:
 	static std::string finalConfig;
 
-	size_t GetScore(void);
+	unsigned int GetScore(void);
 
 	std::string configuration;
-	size_t depth;
-	size_t score;
+	unsigned int depth;
+	unsigned int score;
 	Node *prevNode;
 
 };
