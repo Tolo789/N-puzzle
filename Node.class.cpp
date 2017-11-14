@@ -62,12 +62,73 @@ void Node::SetPuzzleSize(size_t newSize) {
 	Node::puzzleSize = newSize;
 
 	std::stringstream newConfig;
-	double root = sqrt(newSize);
-	double i = 0;
-	while (i < root) {
+	// double root = sqrt(newSize);
+	size_t i = 1;
+	int direction = 0; // 0 = right, 1 = down, 2 = left, 3 = up
+	size_t offset = 0;
+	size_t steps = newSize - offset;
+	int times = 1; // first time
+	size_t max = (newSize * newSize) - 1;
+	size_t map[newSize][newSize];
+	size_t x = 0;
+	size_t y = 0;
+
+	// set to zero
+	y = 0;
+	while (y < newSize) {
+		x = 0;
+		while (x < newSize) {
+			map[y][x] = 0;
+			x++;
+		}
+		std::cout << '\n';
+		y++;
+	}
+
+	y = 0;
+	x = 0;
+	while (i <= max) {
+		map[y][x] = i;
+		steps--;
+		if (steps == 0) {
+			direction = (direction + 1) % 4;
+		}
+
+		if (direction == 0)
+			x++;
+		else if (direction == 1)
+			y++;
+		else if (direction == 2)
+			x--;
+		else if (direction == 4)
+			y--;
 		i++;
 	}
+
+	y = 0;
+	while (y < newSize) {
+		x = 0;
+		while (x < newSize) {
+			std::cout << map[y][x] << " ";
+			x++;
+		}
+		std::cout << '\n';
+		y++;
+	}
 }
+
+// void Node::SetFinalConfig(size_t size) {
+// 	int		offset_x = 0;
+// 	int		offset_y = 0;
+// 	int		x = 1;
+// 	int		y = 1;
+// 	int		i = 0;
+//
+// 	while (i < (size * size) - 1) {
+//
+// 		i++;
+// 	}
+// }
 
 std::string const Node::serialize(void) const {
 	// TODO

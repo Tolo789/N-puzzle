@@ -10,7 +10,7 @@ std::list<Node *>::iterator GetBestNode(std::list<Node *> &openList) {
 
 int main(void) {
 	std::cout << "Size: " << Node::puzzleSize << std::endl;
-	Node::SetPuzzleSize(2);
+	Node::SetPuzzleSize(4);
 	std::cout << "Size: " << Node::puzzleSize << std::endl;
 
 	std::list<Node *> openList;
