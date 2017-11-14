@@ -10,8 +10,18 @@ std::list<Node *>::iterator GetBestNode(std::list<Node *> &openList) {
 
 int main(void) {
 	std::cout << "Size: " << Node::puzzleSize << std::endl;
-	Node::SetPuzzleSize(4);
-	std::cout << "Size: " << Node::puzzleSize << std::endl;
+	size_t newSize = 4;
+	Node::SetPuzzleSize(newSize);
+
+	size_t i = 0;
+	size_t *pos;
+	while (i < newSize * newSize) {
+		pos = Node::GetNumberFinalPos(i);
+		std::cout << "Coord for " << i << ":" << "\tx = " << pos[0] << "\ty = " << pos[1] << std::endl;
+		i++;
+	}
+
+	std::cout << "\nSize: " << Node::puzzleSize << std::endl;
 
 	std::list<Node *> openList;
 	std::list<Node *> closedList;

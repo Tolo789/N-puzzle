@@ -1,6 +1,7 @@
 #ifndef NODE_HPP
 # define NODE_HPP
 # include <iostream>
+# include <map>
 
 class Node {
 
@@ -9,6 +10,7 @@ public:
 	static size_t heurChoice;
 
 	static void SetPuzzleSize(size_t newSize);
+	static size_t *GetNumberFinalPos(size_t number);
 
 	Node(void);
 	Node(Node const & src);
@@ -21,6 +23,7 @@ public:
 
 private:
 	static std::string finalConfig;
+	static std::map<size_t, size_t[2]> coordMap;
 
 	size_t GetScore(void);
 

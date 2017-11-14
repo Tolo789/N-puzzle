@@ -67,7 +67,7 @@ void Node::SetPuzzleSize(size_t newSize) {
 	int direction = 0; // 0 = right, 1 = down, 2 = left, 3 = up
 	size_t offset = 0;
 	size_t steps = newSize - offset;
-	int times = 1; // first time
+	int changeOffsetCount = 1; // usually change offset after 2 direction change, but at the beginning is after the first direction change
 	size_t max = (newSize * newSize) - 1;
 	size_t map[newSize][newSize];
 	size_t x = 0;
@@ -92,6 +92,13 @@ void Node::SetPuzzleSize(size_t newSize) {
 		steps--;
 		if (steps == 0) {
 			direction = (direction + 1) % 4;
+
+			changeOffsetCount--;
+			if (changeOffsetCount == 0) {
+				changeOffsetCount = 2;
+				offset++;
+			}
+			steps = newSize - offset;
 		}
 
 		if (direction == 0)
@@ -100,11 +107,13 @@ void Node::SetPuzzleSize(size_t newSize) {
 			y++;
 		else if (direction == 2)
 			x--;
-		else if (direction == 4)
+		else if (direction == 3)
 			y--;
+
 		i++;
 	}
 
+	// print
 	y = 0;
 	while (y < newSize) {
 		x = 0;
@@ -115,20 +124,32 @@ void Node::SetPuzzleSize(size_t newSize) {
 		std::cout << '\n';
 		y++;
 	}
+
+	// save coords to find references faster
+	std::map<size_t, size_t[2]> newCoordMap;
+	size_t tmp[2];
+	y = 0;
+	while (y < newSize) {
+		x = 0;
+		while (x < newSize) {
+			tmp[0] = x;
+			tmp[1] = y;
+			newCoordMap.insert(std::pair<size_t, size_t[2]>(map[y][x], tmp));
+			x++;
+		}
+		std::cout << '\n';
+		y++;
+	}
+	Node::coordMap = newCoordMap;
 }
 
-// void Node::SetFinalConfig(size_t size) {
-// 	int		offset_x = 0;
-// 	int		offset_y = 0;
-// 	int		x = 1;
-// 	int		y = 1;
-// 	int		i = 0;
-//
-// 	while (i < (size * size) - 1) {
-//
-// 		i++;
-// 	}
-// }
+size_t *Node::GetNumberFinalPos(size_t number) {
+	std::map<size_t, size_t[2]>::iterator it = Node::coordMap.find(number);
+
+	if (it != Node::coordMap.end())
+		return it->second;
+	return NULL;
+}
 
 std::string const Node::serialize(void) const {
 	// TODO
@@ -154,6 +175,8 @@ std::string const Node::serialize(void) const {
 
 size_t Node::puzzleSize = 0;
 size_t Node::heurChoice = 0;
+
+std::map<size_t, size_t[2]> Node::coordMap;
 std::string Node::finalConfig = "";
 
 // === END STATICVARS ==========================================================
