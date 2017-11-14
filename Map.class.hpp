@@ -16,12 +16,13 @@ public:
 	size_t		size;
 	Point				**array;
 
-	Map( size_t const size, std::string const input );
+	Map( size_t const size, std::string **input );
 	Map( Map const & src );
 	~Map( void );
 
 	Map &	operator=( Map const & rhs );
 
+	static int	getFinalPosition( size_t const value, size_t **map, size_t const size, size_t *finalCoords );
 };
 
 #endif

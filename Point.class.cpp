@@ -1,3 +1,5 @@
+#include <sstream>
+
 #include "Point.class.hpp"
 
 /* STATIC VARIABLES ==========================================================*/
@@ -42,6 +44,18 @@ Point::~Point( void ) {
 
 /* MEMBER FUNCTIONS ==========================================================*/
 
+std::string		Point::toString(void) const {
+	std::stringstream		s;
+
+	s << "{ ";
+	s << "value:" << this->value;
+	s << ", x_current:" << this->x_current;
+	s << ", y_current:" << this->y_current;
+	s << ", x_final:" << this->x_final;
+	s << ", y_final:" << this->y_final;
+	s << " }" << std::endl;
+	return (s.str());
+}
 
 /* NON MEMBER FUNCTIONS ======================================================*/
 

@@ -25,6 +25,8 @@ public:
 	Point( Point const & src );
 	~Point( void );
 
+	std::string		toString(void) const;
+
 	Point &	operator=( Point const & rhs );
 
 };
