@@ -9,35 +9,24 @@ std::list<Node *>::iterator GetBestNode(std::list<Node *> &openList) {
 
 
 int main(void) {
-	std::cout << "Size: " << Node::puzzleSize << std::endl;
-	size_t newSize = 4;
+	size_t newSize = 3;
 	Node::SetPuzzleSize(newSize);
 
+	// Check that final pos is correct
 	size_t i = 0;
 	std::array<size_t, 2> pos;
 	while (i < newSize * newSize) {
 		pos = Node::GetNumberFinalPos(i);
-		// if (pos)
-		// 	std::cout << "Coord for " << i << ":" << "\tx = " << pos[0] << "\ty = " << pos[1] << std::endl;
-		// else
-		// 	std::cout << "Coord for " << i << " not found" << std::endl;
+		std::cout << "Coord for " << i << ":" << "\tx = " << pos[0] << "\ty = " << pos[1] << std::endl;
 		i++;
 	}
-
-	std::cout << "\nSize: " << Node::puzzleSize << std::endl;
+	std::cout << std::endl;
 
 	std::list<Node *> openList;
 	std::list<Node *> closedList;
 
-	Node *tmp = new Node("1234567890", 0, NULL);
-	openList.insert(openList.begin(), tmp);
-
-	tmp = new Node("tmp", 0, NULL);
-	openList.insert(openList.begin(), tmp);
-
-	openList.insert(openList.begin(), new Node("toto", 0, NULL));
-
-
+	size_t elems[9] = {1, 2, 3, 4, 5, 6, 7, 8, 0};
+	Node *tmp = new Node(elems, 0, NULL);
 	openList.insert(openList.begin(), tmp);
 
 	// Pseudo A*

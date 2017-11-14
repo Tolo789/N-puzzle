@@ -15,7 +15,7 @@ public:
 
 	Node(void);
 	Node(Node const & src);
-	Node(std::string configuration, size_t depth, Node *prevNode);
+	Node(size_t configuration[], size_t depth, Node *prevNode);
 	~Node(void);
 
 	Node& operator=(Node const & rhs);
@@ -28,7 +28,7 @@ private:
 
 	size_t GetScore(void);
 
-	std::string configuration;
+	size_t *configuration;
 	size_t depth;
 	size_t score;
 	Node *prevNode;

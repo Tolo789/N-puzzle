@@ -1,6 +1,7 @@
 #include <iostream>
 #include <sstream>
 #include <math.h>
+#include <iterator>
 #include "Node.class.hpp"
 
 // === CONSTRUCTOR =============================================================
@@ -11,7 +12,8 @@ Node::Node(void) {
 	return ;
 }
 
-Node::Node(std::string configuration, size_t depth, Node *prevNode) : configuration(configuration), depth(depth), prevNode(prevNode) {
+
+Node::Node(size_t configuration[], size_t depth, Node *prevNode) : configuration(configuration), depth(depth), prevNode(prevNode) {
 	// TODO
 	// std::cout << "Node standard constructor called" << std::endl;
 	this->score = 0;
@@ -134,7 +136,7 @@ void Node::SetPuzzleSize(size_t newSize) {
 		while (x < newSize) {
 			tmp[0] = x;
 			tmp[1] = y;
-			// Node::coordMap.insert(std::pair<size_t, std::array<size_t, 2>(map[y][x], tmp));
+			Node::coordMap.insert(std::pair<size_t, std::array<size_t, 2> >(map[y][x], tmp));
 			x++;
 		}
 		std::cout << '\n';
@@ -146,25 +148,29 @@ void Node::SetPuzzleSize(size_t newSize) {
 std::array<size_t, 2> Node::GetNumberFinalPos(size_t number) {
 	std::map<size_t, std::array<size_t, 2> >::iterator it = Node::coordMap.find(number);
 
-	// if (it != Node::coordMap.end())
-		return it->second;
-	// return NULL;
+	return it->second;
 }
 
 std::string const Node::serialize(void) const {
 	// TODO
 	std::stringstream debug_str;
-	debug_str << "Node{";
-
-	debug_str << "config: " << this->configuration;
-	debug_str << ", depth: " << this->depth;
+	debug_str << "Node (depth: " << this->depth;
 	if (this->prevNode)
 		debug_str << ", prev: " << this->prevNode;
 	else
 		debug_str << ", prev: NULL";
+	debug_str << ")" << std::endl;
 
-
-	debug_str << "}";
+	debug_str << "\t";
+	for (size_t i = 0; i < Node::puzzleSize * Node::puzzleSize; i++) {
+		if (i > 0) {
+			if (i % Node::puzzleSize == 0)
+				debug_str << std::endl << "\t";
+			else
+				debug_str << ", ";
+		}
+		debug_str << this->configuration[i];
+	}
 
 	return debug_str.str();
 }
