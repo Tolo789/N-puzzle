@@ -15,6 +15,7 @@ protected:
 
 public:
 	size_t					size;
+	size_t					score;
 	std::map<size_t, Point>	points;
 	size_t					**array;
 
@@ -25,6 +26,8 @@ public:
 	Node &	operator=( Node const & rhs );
 
 	static int	getFinalPosition( size_t const value, size_t **map, size_t const size, size_t *finalCoords );
+	void			updateScore(void);
+	std::string		toString(void);
 };
 
 #endif

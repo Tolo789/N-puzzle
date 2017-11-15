@@ -1,4 +1,5 @@
 #include <iostream>
+#include <sstream>
 #include <string>
 
 #include "Node.class.hpp"
@@ -96,6 +97,7 @@ Node::Node( size_t const size, std::string **input ) : size(size) {
 			}
 		}
 	}
+	this->updateScore();
 	delete [] finalCoords;
 	for (size_t i = 0; i < size; i++) {
 		delete [] map[i];
@@ -150,6 +152,55 @@ size_t *finalCoords ) {
 		}
 	}
 	return (-1);
+}
+
+void			Node::updateScore(void) {
+	// TODO: score should depend on heuristic choice
+	std::map<size_t, Point>::iterator it;
+	this->score = 0;
+	for (it = this->points.begin(); it != this->points.end(); it++) {
+		if (it->second.value > 0) {
+			if (it->second.x_current >= it->second.x_final)
+				this->score += it->second.x_current - it->second.x_final;
+			else
+				this->score += it->second.x_final - it->second.x_current;
+
+			if (it->second.y_current >= it->second.y_final)
+				this->score += it->second.y_current - it->second.y_final;
+			else
+				this->score += it->second.y_final - it->second.y_current;
+		}
+	}
+
+	return ;
+}
+
+std::string		Node::toString(void) {
+	std::stringstream		s;
+
+	s << "Score: " << this->score << "\nPoints:\n";
+	// std::map<size_t, Point>::iterator it;
+	// for (it = this->points.begin(); it != this->points.end(); it++) {
+	// 	s << "\t" << (it->second).toString();
+	// }
+	s << "Graphical:" << std::endl;
+	size_t i = 0;
+	size_t j;
+	while (i < this->size) {
+		j = 0;
+		s << "\t";
+		while (j < this->size) {
+			if (j > 0)
+				s << " ";
+			s << this->array[i][j];
+			j++;
+		}
+		s << std::endl;
+		i++;
+	}
+
+
+	return (s.str());
 }
 
 /* NON MEMBER FUNCTIONS ======================================================*/

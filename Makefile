@@ -13,7 +13,7 @@ OBJ = $(SRC:.cpp=.o)
 
 ALL = $(NAME)
 
-CFLAGS = #-Wc++11-extensions #-Wall -Wextra -Werror
+CFLAGS = -Wall -Wextra #-Werror
 
 CC = clang++
 
