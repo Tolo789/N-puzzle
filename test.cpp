@@ -192,21 +192,19 @@ int		run(Node *startNode) {
 }
 
 int				main(int ac, char **av) {
-	Env				*env;
 	std::string		*input;
 
 	t_puzzle p = {0, 0};
-	env = new Env();
 	input = NULL;
 	// if (ac == 1) {
 		// return (usage(av[0]));
-	if ( get_options(env, &ac, av) ) {
+	if ( get_options(&ac, av) ) {
 		return (1);
-	} else if ( env->options & HELP ) {
+	} else if ( Env::options & HELP ) {
 		return (usage(av[0]));
 	} else if ( ac > 2 ) {
 		return (ft_error(INVALID_N_INPUT_FILE, 1));
-	} else if ( ac > 1 && ((env->options & ITERATIONS) || (env->options & SIZE)) ) {
+	} else if ( ac > 1 && ((Env::options & ITERATIONS) || (Env::options & SIZE)) ) {
 		return (ft_error(INVALID_PARAM_COMB, 1));
 	}
 

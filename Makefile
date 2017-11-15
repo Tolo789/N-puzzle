@@ -2,7 +2,7 @@ NAME = n-puzzle
 
 SDIR = ./
 
-SRC = 	$(SDIR)main.cpp \
+SRC = 	$(SDIR)test.cpp \
 		$(SDIR)Node.class.cpp \
 		$(SDIR)Point.class.cpp \
 		$(SDIR)Env.class.cpp \
