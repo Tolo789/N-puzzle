@@ -1,37 +1,30 @@
-#ifndef NODE_HPP
-# define NODE_HPP
+#ifndef MAP_CLASS_HPP
+# define MAP_CLASS_HPP
 
-# include <iostream>
+# include <string>
+# include <map>
+
+# include "Point.class.hpp"
 
 class Node {
 
-public:
-	static size_t puzzleSize;
-	static size_t heurChoice;
-
-	static void SetPuzzleSize(size_t newSize);
-
-	Node(void);
-	Node(Node const & src);
-	Node(std::string configuration, size_t depth, Node *prevNode);
-	~Node(void);
-
-	Node& operator=(Node const & rhs);
-
-	std::string const  serialize(void) const;
-
 private:
-	static std::string finalConfig;
+	Node( void );
 
-	size_t GetScore(void);
+protected:
 
-	std::string configuration;
-	size_t depth;
-	size_t score;
-	Node *prevNode;
+public:
+	size_t					size;
+	std::map<size_t, Point>	points;
+	size_t					**array;
 
+	Node( size_t const size, std::string **input );
+	Node( Node const & src );
+	~Node( void );
+
+	Node &	operator=( Node const & rhs );
+
+	static int	getFinalPosition( size_t const value, size_t **map, size_t const size, size_t *finalCoords );
 };
-
-std::ostream & operator<<(std::ostream & o, Node const & rhs);
 
 #endif

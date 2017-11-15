@@ -5,6 +5,8 @@
 #include "Env.class.hpp"
 #include "error.hpp"
 
+#include <stdio.h>
+
 static void	del_null_params(int *ac, char **av, int offset) {
 	int		i;
 	int		n;
@@ -81,6 +83,9 @@ static int	switch_set_options(char const *arg, char const *param, Env *env) {
 				return (setSize(env, param));
 			} else if (*arg == ITERATIONS_CHAR  && !*(arg + 1)) {
 				return (setIterations(env, param));
+			} else if (*arg == HELP_CHAR  && !*(arg + 1)) {
+				env->options |= HELP;
+				return (0);
 			} else {
 				return (ft_error(UNKNOWN_OPTION, 1));
 			}
@@ -112,6 +117,8 @@ int			get_options(Env *env, int *ac, char **av) {
 		else
 			i++;
 	}
+	env->options |= !(env->options & HEUR_MASK) ? HEUR_MAN : env->options;
 	del_null_params(ac, av, n);
+	printf("%hhx\n", env->options);
 	return (0);
 }

@@ -1,87 +1,42 @@
 #include <iostream>
-#include <sstream>
-#include <math.h>
+#include <string>
+
 #include "Node.class.hpp"
 
-// === CONSTRUCTOR =============================================================
 
-Node::Node(void) {
-	// std::cout << "Node default constructor called" << std::endl;
-
-	return ;
-}
-
-Node::Node(std::string configuration, size_t depth, Node *prevNode) : configuration(configuration), depth(depth), prevNode(prevNode) {
-	// TODO
-	// std::cout << "Node standard constructor called" << std::endl;
-	this->score = 0;
-
-	return ;
-}
-
-Node::Node(Node const & src) {
-	// std::cout << "Node copy constructor called" << std::endl;
-	*this = src;
-
-	return ;
-}
-
-Node::~Node(void) {
-	// std::cout << "Node destructor called" << std::endl;
-
-	return ;
-}
-
-// === ENDCONSTRUCTOR ==========================================================
-
-// === OPERATORS ===============================================================
-
-Node& Node::operator=(Node const & rhs) {
-	std::cout << "Node assignation operator called" << rhs << std::endl;
-	// TODO
+/* STATIC VARIABLES ==========================================================*/
 
 
-	return *this;
-}
+/* CONSTRUCTORS ==============================================================*/
+Node::Node( size_t const size, std::string **input ) : size(size) {
+	this->array = new size_t*[size];
+	for (size_t i = 0; i < size; i++) {
+		this->array[i] = new size_t[size];
+	}
 
-std::ostream & operator<<(std::ostream & o, Node const & rhs) {
-	// TODO
-	o << rhs.serialize();
-
-	return o;
-}
-
-// === ENDOPERATORS ============================================================
-
-// === GET / SET ===============================================================
-// === END GET / SET ===========================================================
-
-// === OTHERS ==================================================================
-/*
-void Node::SetPuzzleSize(size_t newSize) {
-	Node::puzzleSize = newSize;
-
-	std::stringstream newConfig;
-	// double root = sqrt(newSize);
+	/* GENERATE FINAL MAP */
 	size_t i = 1;
 	int direction = 0; // 0 = right, 1 = down, 2 = left, 3 = up
 	size_t offset = 0;
-	size_t steps = newSize - offset;
-	int times = 1; // first time
-	size_t max = (newSize * newSize) - 1;
-	size_t map[newSize][newSize];
+	size_t steps = size - offset;
+	int changeOffsetCount = 1; // usually change offset after 2 direction change, but at the beginning is after the first direction change
+	size_t max = (size * size) - 1;
+	size_t	**map = new size_t* [size];
+	for (size_t i = 0; i < size; i++) {
+		map[i] = new size_t [size];
+	}
 	size_t x = 0;
 	size_t y = 0;
 
 	// set to zero
 	y = 0;
-	while (y < newSize) {
+	while (y < size) {
 		x = 0;
-		while (x < newSize) {
+		while (x < size) {
 			map[y][x] = 0;
 			x++;
 		}
-		std::cout << '\n';
+		// std::cout << '\n';
 		y++;
 	}
 
@@ -92,109 +47,112 @@ void Node::SetPuzzleSize(size_t newSize) {
 		steps--;
 		if (steps == 0) {
 			direction = (direction + 1) % 4;
+
+			changeOffsetCount--;
+			if (changeOffsetCount == 0) {
+				changeOffsetCount = 2;
+				offset++;
+			}
+			steps = size - offset;
 		}
 
-		if (direction == 0)
+		switch (direction) {
+			case 0:
 			x++;
-		else if (direction == 1)
+			break;
+			case 1:
 			y++;
-		else if (direction == 2)
+			break;
+			case 2:
 			x--;
-		else if (direction == 4)
+			break;
+			case 3:
 			y--;
+			break;
+			default:
+			break;
+		}
+		// if (direction == 0)
+		// else if (direction == 1)
+		// else if (direction == 2)
+		// else if (direction == 3)
+
 		i++;
 	}
-
-	y = 0;
-	while (y < newSize) {
-		x = 0;
-		while (x < newSize) {
-			std::cout << map[y][x] << " ";
-			x++;
-		}
-		std::cout << '\n';
-		y++;
-	}
-}
-*/
-void Node::SetPuzzleSize(size_t size) {
-	Node::puzzleSize = size;
-
-	size_t	map[size * size];
-	int		v[2] = {1, 0};
-	size_t	index = 0;
-	size_t	i = 0;
-	size_t	offset = 0;
-	size_t	x = 0;
-	size_t	y = 0;
-
-	while (i < (size * size) - 1) {
-		index = x + y * size;
-		std::cout << index << std::endl;
-		// map[index] = i;
-		i += 1;
-		x += v[0];
-		y += v[1];
-		if (y == x && x == size - offset && v[0] == 1) {
-			v[0] = 0, v[1] = 1;
-		} else if (x == size - offset && v[1] == 1) {
-			v[0] = -1, v[1] = 0;
-		} else if (x == offset && y == size - offset && v[0] == -1) {
-			v[0] = 0, v[1] = -1;
-		} else if (y == x && x == offset && v[1] == -1) {
-			v[0] = 1, v[1] = 0;
-			offset += 1;
-			x = offset;
+	size_t	index;
+	size_t	value;
+	size_t	*finalCoords = new size_t [2];
+	for (int y = 0; y < size; y++) {
+		for (int x = 0; x < size; x++) {
+			size_t pos = 0;
+			value = static_cast<size_t>(std::stoi(input[y][x], &pos , 10));
+			if (Node::getFinalPosition( value, map, size, finalCoords ) < 0) {
+				/* ERROR HANDLING */
+				std::cout << "ERROR" << std::endl;
+			} else {
+				Point newPoint = Point(value, x, y, finalCoords[0], finalCoords[1]);
+				this->array[y][x] = value;
+				this->points.insert(std::pair<size_t, Point>(value, newPoint));
+			}
 		}
 	}
-	// for (size_t i = 0; i < size; i++) {
-	// 	std::cout << " " << map[i];
-	// 	if (!(i % size)) {
-	// 		std::cout << std::endl;
-	// 	}
-	// }
+	delete [] finalCoords;
+	for (size_t i = 0; i < size; i++) {
+		delete [] map[i];
+	}
+	delete [] map;
 }
 
-// void Node::SetFinalConfig(size_t size) {
-// 	int		offset_x = 0;
-// 	int		offset_y = 0;
-// 	int		x = 1;
-// 	int		y = 1;
-// 	int		i = 0;
-//
-// 	while (i < (size * size) - 1) {
-//
-// 		i++;
-// 	}
-// }
-
-std::string const Node::serialize(void) const {
-	// TODO
-	std::stringstream debug_str;
-	debug_str << "Node{";
-
-	debug_str << "config: " << this->configuration;
-	debug_str << ", depth: " << this->depth;
-	if (this->prevNode)
-		debug_str << ", prev: " << this->prevNode;
-	else
-		debug_str << ", prev: NULL";
-
-
-	debug_str << "}";
-
-	return debug_str.str();
+Node::Node( Node const & src ) {
+	*this = src;
 }
 
-// === ENDOTHERS ===============================================================
+/* MEMBER OPERATORS OVERLOAD =================================================*/
+Node		&Node::operator=( Node const & rhs ) {
+	this->size = rhs.size;
+	std::cout << size << '\n';
+	this->points = rhs.points;
 
-// === STATICVARS ==============================================================
+	this->array = new size_t*[this->size];
+	for (size_t i = 0; i < this->size; i++) {
+		this->array[i] = new size_t[this->size];
+		for (size_t j = 0; j < size; j++) {
+			this->array[i][j] = rhs.array[i][j];
+		}
+	}
+	return ( *this );
+}
 
-size_t Node::puzzleSize = 0;
-size_t Node::heurChoice = 0;
-std::string Node::finalConfig = "";
 
-// === END STATICVARS ==========================================================
+/* DESTRUCTOR ================================================================*/
+Node::~Node( void ) {
+	for (size_t i = 0; i < this->size; i++) {
+		delete this->array[i];
+	}
+	delete this->array;
+	this->points.clear();
+}
 
-// === EXCEPTIONS ==============================================================
-// === END EXCEPTIONS ==========================================================
+/* MEMBER FUNCTIONS ==========================================================*/
+
+int	Node::getFinalPosition(
+size_t const value,
+size_t **map,
+size_t const size,
+size_t *finalCoords ) {
+	for (size_t i = 0; i < size; i++) {
+		for (size_t j = 0; j < size; j++) {
+			if (value == map[i][j]) {
+				finalCoords[0] = j;
+				finalCoords[1] = i;
+				return (0);
+			}
+		}
+	}
+	return (-1);
+}
+
+/* NON MEMBER FUNCTIONS ======================================================*/
+
+
+/* OPERATOR ==================================================================*/

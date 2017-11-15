@@ -8,17 +8,19 @@
 # define	HEUR_2			0x02
 # define	HEUR_3			0x04
 # define	SIZE			0x08
-# define	ITERATIONS		0xa0
+# define	ITERATIONS		0x10
+# define	HELP			0x20
 
-# define	HEUR_CHAR		'h'
+# define	HEUR_CHAR		'e'
 # define	SIZE_CHAR		's'
 # define	ITERATIONS_CHAR	'i'
+# define	HELP_CHAR		'h'
 
 # define	HEUR_MAN_STR	"man"
 # define	HEUR_2_STR		"2"
 # define	HEUR_3_STR		"3"
 
-# define	PARAMS_STR		"hsi"
+# define	PARAMS_STR		"hesi"
 
 /* MASKS */
 # define	HEUR_MASK		0x07
