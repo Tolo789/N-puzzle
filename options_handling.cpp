@@ -31,44 +31,44 @@ static void	del_null_params(int *ac, char **av, int offset) {
 	*ac -= offset;
 }
 
-static int	setHeuristic(Env *env, char const *param) {
+static int	setHeuristic(char const *param) {
 	if (!param) {
 		return (ft_error(UNKNOWN_OPTION, 1));
-	} else if (env->options & HEUR_MASK) {
+	} else if (Env::options & HEUR_MASK) {
 		return (ft_error(ONLY_ONE_HEUR, 1));
 	} else if (!strcmp(param, HEUR_MAN_STR)) {
-		env->options |= HEUR_MAN;
+		Env::options |= HEUR_MAN;
 	} else if (!strcmp(param, HEUR_2_STR)) {
-		env->options |= HEUR_2;
+		Env::options |= HEUR_2;
 	} else if (!strcmp(param, HEUR_3_STR)) {
-		env->options |= HEUR_3;
+		Env::options |= HEUR_3;
 	} else {
 		return (ft_error(INVALID_HEUR, 1));
 	}
 	return (0);
 }
 
-static int	setSize(Env *env, char const *param) {
+static int	setSize(char const *param) {
 	if (!param) {
 		return (ft_error(INVALID_OPTION_VALUE, 1));
 	} else {
-		env->options |= SIZE;
+		Env::options |= SIZE;
 		Env::puzzle.size = std::stoi(param);
 		return (0);
 	}
 }
 
-static int	setIterations(Env *env, char const *param) {
+static int	setIterations(char const *param) {
 	if (!param) {
 		return (ft_error(INVALID_OPTION_VALUE, 1));
 	} else {
-		env->options |= ITERATIONS;
+		Env::options |= ITERATIONS;
 		Env::puzzle.iterations = std::stoi(param);
 		return (0);
 	}
 }
 
-static int	switch_set_options(char const *arg, char const *param, Env *env) {
+static int	switch_set_options(char const *arg, char const *param) {
 	if (!arg)
 		return (0);
 	else
@@ -78,13 +78,13 @@ static int	switch_set_options(char const *arg, char const *param, Env *env) {
 		if (*arg && strchr(PARAMS_STR, static_cast<int>(*arg)))
 		{
 			if (*arg == HEUR_CHAR  && !*(arg + 1)) {
-				return (setHeuristic(env, param));
+				return (setHeuristic(param));
 			} else if (*arg == SIZE_CHAR  && !*(arg + 1)) {
-				return (setSize(env, param));
+				return (setSize(param));
 			} else if (*arg == ITERATIONS_CHAR  && !*(arg + 1)) {
-				return (setIterations(env, param));
+				return (setIterations(param));
 			} else if (*arg == HELP_CHAR  && !*(arg + 1)) {
-				env->options |= HELP;
+				Env::options |= HELP;
 				return (0);
 			} else {
 				return (ft_error(UNKNOWN_OPTION, 1));
@@ -97,7 +97,7 @@ static int	switch_set_options(char const *arg, char const *param, Env *env) {
 	return (0);
 }
 
-int			get_options(Env *env, int *ac, char **av) {
+int			get_options(int *ac, char **av) {
 	int		i;
 	int		n;
 
@@ -107,7 +107,7 @@ int			get_options(Env *env, int *ac, char **av) {
 	{
 		if (av[i][0] == '-')
 		{
-			if (switch_set_options(av[i], av[i + 1], env) > 0)
+			if (switch_set_options(av[i], av[i + 1]) > 0)
 				return (1);
 			av[i] = NULL;
 			av[i + 1] = NULL;
@@ -117,8 +117,7 @@ int			get_options(Env *env, int *ac, char **av) {
 		else
 			i++;
 	}
-	env->options |= !(env->options & HEUR_MASK) ? HEUR_MAN : env->options;
+	Env::options |= !(Env::options & HEUR_MASK) ? HEUR_MAN : Env::options;
 	del_null_params(ac, av, n);
-	printf("%hhx\n", env->options);
 	return (0);
 }

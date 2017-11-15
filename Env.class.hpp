@@ -33,6 +33,7 @@ typedef struct	s_puzzle {
 class Env {
 
 private:
+	Env( void );
 	Env( Env const & src );
 	~Env( void );
 	Env &	operator=( Env const & rhs );
@@ -40,14 +41,13 @@ private:
 protected:
 
 public:
-	unsigned char	options;
-	size_t			totalNumberOfStates;
-	size_t			maxNumberOfState;
-	size_t			numberOfMove;
+	static unsigned char	options;
+	static size_t			totalNumberOfStates;
+	static size_t			maxNumberOfState;
+	static size_t			numberOfMove;
 
 	static t_puzzle	puzzle;
 
-	Env( void );
 
 };
 

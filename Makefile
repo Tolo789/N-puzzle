@@ -2,7 +2,7 @@ NAME = n-puzzle
 
 SDIR = ./
 
-SRC = 	$(SDIR)test.cpp \
+SRC = 	$(SDIR)main.cpp \
 		$(SDIR)Node.class.cpp \
 		$(SDIR)Point.class.cpp \
 		$(SDIR)Env.class.cpp \
@@ -13,7 +13,7 @@ OBJ = $(SRC:.cpp=.o)
 
 ALL = $(NAME)
 
-CFLAGS = -Wall -Wextra #-Werror
+CFLAGS = #-Wall -Wextra #-Werror
 
 CC = clang++
 
