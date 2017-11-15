@@ -23,11 +23,11 @@ public:
 	Map( Map const & src );
 	~Map( void );
 
-	std::string		toString(void);
-
 	Map &	operator=( Map const & rhs );
 
-	static int	getFinalPosition( size_t const value, size_t **map, size_t const size, size_t *finalCoords );
+	static int		getFinalPosition( size_t const value, size_t **map, size_t const size, size_t *finalCoords );
+	void			updateScore(void);
+	std::string		toString(void);
 };
 
 #endif

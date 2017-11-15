@@ -86,9 +86,6 @@ Map::Map( size_t const size, std::string **input ) : size(size) {
 	size_t	index;
 	size_t	value;
 	size_t	*finalCoords = new size_t [2];
-	this->score = 0;
-	size_t	xScore;
-	size_t	yScore;
 	for (int y = 0; y < size; y++) {
 		for (int x = 0; x < size; x++) {
 			// index = x + y * size;
@@ -101,19 +98,10 @@ Map::Map( size_t const size, std::string **input ) : size(size) {
 				Point newPoint = Point(value, x, y, finalCoords[0], finalCoords[1]);
 				this->array[y][x] = value;
 				this->points.insert(std::pair<size_t, Point>(value, newPoint));
-
-				if (x >= finalCoords[0])
-					xScore = x - finalCoords[0];
-				else
-					xScore = finalCoords[0] - x;
-				if (y >= finalCoords[1])
-					yScore = y - finalCoords[1];
-				else
-					yScore = finalCoords[1] - y;
-				this->score += xScore + yScore;
 			}
 		}
 	}
+	this->updateScore();
 	delete [] finalCoords;
 	for (size_t i = 0; i < size; i++) {
 		delete [] map[i];
@@ -128,7 +116,7 @@ Map::Map( Map const & src ) {
 /* MEMBER OPERATORS OVERLOAD =================================================*/
 Map		&Map::operator=( Map const & rhs ) {
 	this->size = rhs.size;
-	std::cout << size << '\n';
+	this->score = rhs.score;
 	this->points = rhs.points;
 
 	this->array = new size_t*[this->size];
@@ -173,14 +161,51 @@ size_t *finalCoords ) {
 	return (-1);
 }
 
+void			Map::updateScore(void) {
+	// TODO: score should depend on heuristic choice
+	std::map<size_t, Point>::iterator it;
+	this->score = 0;
+	for (it = this->points.begin(); it != this->points.end(); it++) {
+		if (it->second.value > 0) {
+			if (it->second.x_current >= it->second.x_final)
+				this->score += it->second.x_current - it->second.x_final;
+			else
+				this->score += it->second.x_final - it->second.x_current;
+
+			if (it->second.y_current >= it->second.y_final)
+				this->score += it->second.y_current - it->second.y_final;
+			else
+				this->score += it->second.y_final - it->second.y_current;
+		}
+	}
+
+	return ;
+}
+
 std::string		Map::toString(void) {
 	std::stringstream		s;
 
 	s << "Score: " << this->score << "\nPoints:\n";
-	std::map<size_t, Point>::iterator it;
-	for (it = this->points.begin(); it != this->points.end(); it++) {
-		s << (it->second).toString();
+	// std::map<size_t, Point>::iterator it;
+	// for (it = this->points.begin(); it != this->points.end(); it++) {
+	// 	s << "\t" << (it->second).toString();
+	// }
+	s << "Graphical:" << std::endl;
+	size_t i = 0;
+	size_t j;
+	while (i < this->size) {
+		j = 0;
+		s << "\t";
+		while (j < this->size) {
+			if (j > 0)
+				s << " ";
+			s << this->array[i][j];
+			j++;
+		}
+		s << std::endl;
+		i++;
 	}
+
 
 	return (s.str());
 }
