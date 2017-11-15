@@ -9,10 +9,8 @@
 
 /* CONSTRUCTORS ==============================================================*/
 Map::Map( size_t const size, std::string **input ) : size(size) {
-	// this->array = (size_t**)malloc(sizeof(size_t) * size);
 	this->array = new size_t*[size];
 	for (size_t i = 0; i < size; i++) {
-		// this->array[i] = (size_t*)malloc(sizeof(size_t) * size);
 		this->array[i] = new size_t[size];
 	}
 
@@ -23,7 +21,6 @@ Map::Map( size_t const size, std::string **input ) : size(size) {
 	size_t steps = size - offset;
 	int changeOffsetCount = 1; // usually change offset after 2 direction change, but at the beginning is after the first direction change
 	size_t max = (size * size) - 1;
-	// size_t map[size][size];
 	size_t	**map = new size_t* [size];
 	for (size_t i = 0; i < size; i++) {
 		map[i] = new size_t [size];
@@ -87,7 +84,6 @@ Map::Map( size_t const size, std::string **input ) : size(size) {
 	size_t	*finalCoords = new size_t [2];
 	for (int y = 0; y < size; y++) {
 		for (int x = 0; x < size; x++) {
-			// index = x + y * size;
 			size_t pos = 0;
 			value = static_cast<size_t>(std::stoi(input[y][x], &pos , 10));
 			if (Map::getFinalPosition( value, map, size, finalCoords ) < 0) {
@@ -122,7 +118,6 @@ Map		&Map::operator=( Map const & rhs ) {
 		this->array[i] = new size_t[this->size];
 		for (size_t j = 0; j < size; j++) {
 			this->array[i][j] = rhs.array[i][j];
-			// std::cout << rhs.array[i][j].toString() << '\n';
 		}
 	}
 	return ( *this );
@@ -132,10 +127,8 @@ Map		&Map::operator=( Map const & rhs ) {
 /* DESTRUCTOR ================================================================*/
 Map::~Map( void ) {
 	for (size_t i = 0; i < this->size; i++) {
-		// free(this->array[i]);
 		delete this->array[i];
 	}
-	// free(this->array);
 	delete this->array;
 	this->points.clear();
 }
@@ -159,7 +152,7 @@ size_t *finalCoords ) {
 	return (-1);
 }
 
-	/* NON MEMBER FUNCTIONS ======================================================*/
+/* NON MEMBER FUNCTIONS ======================================================*/
 
 
-	/* OPERATOR ==================================================================*/
+/* OPERATOR ==================================================================*/

@@ -11,15 +11,15 @@ Point::Point( void ) {
 }
 
 Point::Point( size_t const value,
-	size_t const x_current,
-	size_t const y_current,
-	size_t const x_final,
-	size_t const y_final ) :
-	value(value),
-	x_current(x_current),
-	y_current(y_current),
-	x_final(x_final),
-	y_final(y_final) {
+size_t const x_current,
+size_t const y_current,
+size_t const x_final,
+size_t const y_final ) :
+value(value),
+x_current(x_current),
+y_current(y_current),
+x_final(x_final),
+y_final(y_final) {
 
 }
 

@@ -5,13 +5,16 @@ SDIR = ./
 SRC = 	$(SDIR)test.cpp \
 		$(SDIR)Node.class.cpp \
 		$(SDIR)Point.class.cpp \
+		$(SDIR)Env.class.cpp \
+		$(SDIR)options_handling.cpp \
+		$(SDIR)error.cpp \
 		$(SDIR)Map.class.cpp
 
 OBJ = $(SRC:.cpp=.o)
 
 ALL = $(NAME)
 
-CFLAGS = #-Wall -Wextra -Werror
+CFLAGS = #-Wc++11-extensions #-Wall -Wextra -Werror
 
 CC = clang++
 
