@@ -112,7 +112,7 @@ Node::Node( Node const & src ) {
 /* MEMBER OPERATORS OVERLOAD =================================================*/
 Node		&Node::operator=( Node const & rhs ) {
 	this->size = rhs.size;
-	std::cout << size << '\n';
+	// std::cout << size << '\n';
 	this->points = rhs.points;
 
 	this->array = new size_t*[this->size];
