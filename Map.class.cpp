@@ -1,4 +1,5 @@
 #include <iostream>
+#include <sstream>
 #include <string>
 
 #include "Map.class.hpp"
@@ -85,6 +86,9 @@ Map::Map( size_t const size, std::string **input ) : size(size) {
 	size_t	index;
 	size_t	value;
 	size_t	*finalCoords = new size_t [2];
+	this->score = 0;
+	size_t	xScore;
+	size_t	yScore;
 	for (int y = 0; y < size; y++) {
 		for (int x = 0; x < size; x++) {
 			// index = x + y * size;
@@ -97,6 +101,16 @@ Map::Map( size_t const size, std::string **input ) : size(size) {
 				Point newPoint = Point(value, x, y, finalCoords[0], finalCoords[1]);
 				this->array[y][x] = value;
 				this->points.insert(std::pair<size_t, Point>(value, newPoint));
+
+				if (x >= finalCoords[0])
+					xScore = x - finalCoords[0];
+				else
+					xScore = finalCoords[0] - x;
+				if (y >= finalCoords[1])
+					yScore = y - finalCoords[1];
+				else
+					yScore = finalCoords[1] - y;
+				this->score += xScore + yScore;
 			}
 		}
 	}
@@ -157,6 +171,18 @@ size_t *finalCoords ) {
 		}
 	}
 	return (-1);
+}
+
+std::string		Map::toString(void) {
+	std::stringstream		s;
+
+	s << "Score: " << this->score << "\nPoints:\n";
+	std::map<size_t, Point>::iterator it;
+	for (it = this->points.begin(); it != this->points.end(); it++) {
+		s << (it->second).toString();
+	}
+
+	return (s.str());
 }
 
 	/* NON MEMBER FUNCTIONS ======================================================*/

@@ -15,12 +15,15 @@ protected:
 
 public:
 	size_t					size;
+	size_t					score;
 	std::map<size_t, Point>	points;
 	size_t					**array;
 
 	Map( size_t const size, std::string **input );
 	Map( Map const & src );
 	~Map( void );
+
+	std::string		toString(void);
 
 	Map &	operator=( Map const & rhs );
 
