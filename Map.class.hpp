@@ -1,15 +1,15 @@
-#ifndef NODE_CLASS_HPP
-# define NODE_CLASS_HPP
+#ifndef MAP_CLASS_HPP
+# define MAP_CLASS_HPP
 
 # include <string>
 # include <map>
 
 # include "Point.class.hpp"
 
-class Node {
+class Map {
 
 private:
-	Node( void );
+	Map( void );
 
 protected:
 
@@ -18,11 +18,11 @@ public:
 	std::map<size_t, Point>	points;
 	size_t					**array;
 
-	Node( size_t const size, std::string **input );
-	Node( Node const & src );
-	~Node( void );
+	Map( size_t const size, std::string **input );
+	Map( Map const & src );
+	~Map( void );
 
-	Node &	operator=( Node const & rhs );
+	Map &	operator=( Map const & rhs );
 
 	static int	getFinalPosition( size_t const value, size_t **map, size_t const size, size_t *finalCoords );
 };
