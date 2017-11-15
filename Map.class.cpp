@@ -1,6 +1,5 @@
 #include <iostream>
 #include <string>
-#include <stdlib.h>
 
 #include "Map.class.hpp"
 
@@ -10,9 +9,11 @@
 
 /* CONSTRUCTORS ==============================================================*/
 Map::Map( size_t const size, std::string **input ) : size(size) {
-	this->array = (size_t**)malloc(sizeof(size_t) * size);
+	// this->array = (size_t**)malloc(sizeof(size_t) * size);
+	this->array = new size_t*[size];
 	for (size_t i = 0; i < size; i++) {
-		this->array[i] = (size_t*)malloc(sizeof(size_t) * size);
+		// this->array[i] = (size_t*)malloc(sizeof(size_t) * size);
+		this->array[i] = new size_t[size];
 	}
 
 	/* GENERATE FINAL MAP */
@@ -60,19 +61,19 @@ Map::Map( size_t const size, std::string **input ) : size(size) {
 
 		switch (direction) {
 			case 0:
-				x++;
-				break;
+			x++;
+			break;
 			case 1:
-				y++;
-				break;
+			y++;
+			break;
 			case 2:
-				x--;
-				break;
+			x--;
+			break;
 			case 3:
-				y--;
-				break;
+			y--;
+			break;
 			default:
-				break;
+			break;
 		}
 		// if (direction == 0)
 		// else if (direction == 1)
@@ -105,18 +106,23 @@ Map::Map( size_t const size, std::string **input ) : size(size) {
 	}
 	delete [] map;
 }
+
 Map::Map( Map const & src ) {
 	*this = src;
 }
 
 /* MEMBER OPERATORS OVERLOAD =================================================*/
 Map		&Map::operator=( Map const & rhs ) {
-	// this->size = rhs->size;
-	this->array = (size_t**)malloc(sizeof(size_t) * size);
-	for (size_t i = 0; i < size; i++) {
-		this->array[i] = (size_t*)malloc(sizeof(size_t) * size);
+	this->size = rhs.size;
+	std::cout << size << '\n';
+	this->points = rhs.points;
+
+	this->array = new size_t*[this->size];
+	for (size_t i = 0; i < this->size; i++) {
+		this->array[i] = new size_t[this->size];
 		for (size_t j = 0; j < size; j++) {
 			this->array[i][j] = rhs.array[i][j];
+			// std::cout << rhs.array[i][j].toString() << '\n';
 		}
 	}
 	return ( *this );
@@ -126,29 +132,32 @@ Map		&Map::operator=( Map const & rhs ) {
 /* DESTRUCTOR ================================================================*/
 Map::~Map( void ) {
 	for (size_t i = 0; i < this->size; i++) {
-		free(this->array[i]);
+		// free(this->array[i]);
+		delete this->array[i];
 	}
-	free(this->array);
+	// free(this->array);
+	delete this->array;
+	this->points.clear();
 }
 
 /* MEMBER FUNCTIONS ==========================================================*/
 
-int		Map::getFinalPosition(
-	size_t const value,
-	size_t **map,
-	size_t const size,
-	size_t *finalCoords ) {
-		for (size_t i = 0; i < size; i++) {
-			for (size_t j = 0; j < size; j++) {
-				if (value == map[i][j]) {
-					finalCoords[0] = j;
-					finalCoords[1] = i;
-					return (0);
-				}
+int	Map::getFinalPosition(
+size_t const value,
+size_t **map,
+size_t const size,
+size_t *finalCoords ) {
+	for (size_t i = 0; i < size; i++) {
+		for (size_t j = 0; j < size; j++) {
+			if (value == map[i][j]) {
+				finalCoords[0] = j;
+				finalCoords[1] = i;
+				return (0);
 			}
 		}
-		return (-1);
 	}
+	return (-1);
+}
 
 	/* NON MEMBER FUNCTIONS ======================================================*/
 

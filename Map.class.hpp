@@ -14,9 +14,9 @@ private:
 protected:
 
 public:
-	size_t		size;
-	std::map<size_t, Point> points;
-	size_t				**array;
+	size_t					size;
+	std::map<size_t, Point>	points;
+	size_t					**array;
 
 	Map( size_t const size, std::string **input );
 	Map( Map const & src );

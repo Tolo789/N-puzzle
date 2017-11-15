@@ -31,6 +31,14 @@ std::string		**treatInput(std::string input) {
 	return (ret);
 }
 
+// void	ft_e(Map mapOne) {
+// 	std::map<size_t, Point>::iterator it;
+// 	for (it = mapOne.points.begin(); it != mapOne.points.end(); it++) {
+// 		std::cout << (it->second).toString() << std::endl;
+// 	}
+// 	return;
+// }
+
 int		main(int ac, char **av) {
 	std::string **ret = treatInput("1 2 3\n4 0 6\n7 8 5");
 	Map *mapOne = new Map(3, ret);
@@ -45,6 +53,7 @@ int		main(int ac, char **av) {
 	// iter over all points
 	std::cout << std::endl << "Printing all points" << std::endl;
 	std::map<size_t, Point>::iterator it;
+	ft_e(*mapOne);
 	for (it = mapOne->points.begin(); it != mapOne->points.end(); it++) {
 		std::cout << (it->second).toString() << std::endl;
 	}
