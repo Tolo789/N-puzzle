@@ -1,5 +1,6 @@
 #ifndef NODE_HPP
 # define NODE_HPP
+
 # include <iostream>
 # include <map>
 # include <array>

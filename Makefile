@@ -3,13 +3,15 @@ NAME = n-puzzle
 SDIR = ./
 
 SRC = 	$(SDIR)main.cpp \
-		$(SDIR)Node.class.cpp
+		$(SDIR)Node.class.cpp \
+		$(SDIR)Point.class.cpp \
+		$(SDIR)Map.class.cpp
 
 OBJ = $(SRC:.cpp=.o)
 
 ALL = $(NAME)
 
-CFLAGS = -Wall -Wextra -Werror
+CFLAGS = #-Wall -Wextra -Werror
 
 CC = clang++
 
@@ -20,7 +22,7 @@ $(NAME): $(OBJ)
 	@echo "				$(NAME) created"
 
 .cpp.o:
-	$(CC) $(CFLAGS) -c $< -o $@
+	$(CC) $(CFLAGS) -c $< -o $@ -I .
 
 clean:
 	@/bin/rm -f $(OBJ)

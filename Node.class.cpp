@@ -59,7 +59,7 @@ std::ostream & operator<<(std::ostream & o, Node const & rhs) {
 // === END GET / SET ===========================================================
 
 // === OTHERS ==================================================================
-
+/*
 void Node::SetPuzzleSize(size_t newSize) {
 	Node::puzzleSize = newSize;
 
@@ -143,6 +143,44 @@ void Node::SetPuzzleSize(size_t newSize) {
 		y++;
 	}
 	// Node::coordMap = newCoordMap;
+}
+*/
+void Node::SetPuzzleSize(size_t size) {
+	Node::puzzleSize = size;
+
+	size_t	map[size * size];
+	int		v[2] = {1, 0};
+	size_t	index = 0;
+	size_t	i = 0;
+	size_t	offset = 0;
+	size_t	x = 0;
+	size_t	y = 0;
+
+	while (i < (size * size) - 1) {
+		index = x + y * size;
+		std::cout << index << std::endl;
+		// map[index] = i;
+		i += 1;
+		x += v[0];
+		y += v[1];
+		if (y == x && x == size - offset && v[0] == 1) {
+			v[0] = 0, v[1] = 1;
+		} else if (x == size - offset && v[1] == 1) {
+			v[0] = -1, v[1] = 0;
+		} else if (x == offset && y == size - offset && v[0] == -1) {
+			v[0] = 0, v[1] = -1;
+		} else if (y == x && x == offset && v[1] == -1) {
+			v[0] = 1, v[1] = 0;
+			offset += 1;
+			x = offset;
+		}
+	}
+	// for (size_t i = 0; i < size; i++) {
+	// 	std::cout << " " << map[i];
+	// 	if (!(i % size)) {
+	// 		std::cout << std::endl;
+	// 	}
+	// }
 }
 
 std::array<size_t, 2> Node::GetNumberFinalPos(size_t number) {
