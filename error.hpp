@@ -8,6 +8,7 @@
 # define INVALID_PARAM_COMB "Error: invalid parameters combinasion."
 # define INVALID_OPTION_VALUE "Error: an options value is invalid."
 # define INVALID_N_INPUT_FILE "Error: too many input file."
+# define INVALID_SIZE "Error: invalid size value."
 
 int		ft_error(std::string const type, int const ret);
 

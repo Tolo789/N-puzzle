@@ -4,8 +4,9 @@
 
 #include "Env.class.hpp"
 #include "error.hpp"
+#include "tools.hpp"
 
-#include <stdio.h>
+// #include <stdio.h>
 
 static void	del_null_params(int *ac, char **av, int offset) {
 	int		i;
@@ -52,9 +53,20 @@ static int	setSize(char const *param) {
 	if (!param) {
 		return (ft_error(INVALID_OPTION_VALUE, 1));
 	} else {
-		Env::options |= SIZE;
-		Env::puzzle.size = std::stoi(param);
-		return (0);
+		if (all_digit(std::string(param))) {
+			return (ft_error(INVALID_OPTION_VALUE, 1));
+		}
+		try {
+			Env::puzzle.size = std::stoi(param);
+			if (Env::puzzle.size > 1) {
+				Env::options |= SIZE;
+				return (0);
+			} else {
+				return (ft_error(INVALID_OPTION_VALUE, 1));
+			}
+		} catch (...) {
+			return (ft_error(INVALID_OPTION_VALUE, 1));
+		}
 	}
 }
 
@@ -62,8 +74,20 @@ static int	setIterations(char const *param) {
 	if (!param) {
 		return (ft_error(INVALID_OPTION_VALUE, 1));
 	} else {
-		Env::options |= ITERATIONS;
-		Env::puzzle.iterations = std::stoi(param);
+		if (all_digit(std::string(param))) {
+			return (ft_error(INVALID_OPTION_VALUE, 1));
+		}
+		try {
+			Env::puzzle.iterations = std::stoi(param);
+			if (Env::puzzle.iterations) {
+				Env::options |= ITERATIONS;
+				return (0);
+			} else {
+				return (ft_error(INVALID_OPTION_VALUE, 1));
+			}
+		} catch (...) {
+			return (ft_error(INVALID_OPTION_VALUE, 1));
+		}
 		return (0);
 	}
 }

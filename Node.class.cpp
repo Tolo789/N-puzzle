@@ -9,6 +9,95 @@
 
 
 /* CONSTRUCTORS ==============================================================*/
+Node::Node( size_t const size ) : size(size) {
+	this->array = new size_t*[size];
+	for (size_t i = 0; i < size; i++) {
+		this->array[i] = new size_t[size];
+	}
+
+	/* GENERATE FINAL MAP */
+	size_t i = 1;
+	int direction = 0; // 0 = right, 1 = down, 2 = left, 3 = up
+	size_t offset = 0;
+	size_t steps = size - offset;
+	int changeOffsetCount = 1; // usually change offset after 2 direction change, but at the beginning is after the first direction change
+	size_t max = (size * size) - 1;
+	size_t	**map = new size_t* [size];
+	for (size_t i = 0; i < size; i++) {
+		map[i] = new size_t [size];
+	}
+	size_t x = 0;
+	size_t y = 0;
+
+	// set to zero
+	y = 0;
+	while (y < size) {
+		x = 0;
+		while (x < size) {
+			map[y][x] = 0;
+			x++;
+		}
+		y++;
+	}
+
+	y = 0;
+	x = 0;
+	while (i <= max) {
+		map[y][x] = i;
+		steps--;
+		if (steps == 0) {
+			direction = (direction + 1) % 4;
+
+			changeOffsetCount--;
+			if (changeOffsetCount == 0) {
+				changeOffsetCount = 2;
+				offset++;
+			}
+			steps = size - offset;
+		}
+		switch (direction) {
+			case 0:
+				x++;
+				break;
+			case 1:
+				y++;
+				break;
+			case 2:
+				x--;
+				break;
+			case 3:
+				y--;
+				break;
+			default:
+			break;
+		}
+		i++;
+	}
+	size_t	index;
+	size_t	value;
+	for (int y = 0; y < size; y++) {
+		for (int x = 0; x < size; x++) {
+			size_t pos = 0;
+			value = map[y][x];
+			Point newPoint = Point(value, x, y, x, y);
+			this->array[y][x] = value;
+			this->points.insert(std::pair<size_t, Point>(value, newPoint));
+		}
+	}
+	for (size_t i = 0; i < size; i++) {
+		delete [] map[i];
+	}
+	delete [] map;
+	for (size_t y = 0; y < this->size * this->size; y++) {
+		std::cout << (this->points[y]).toString() << '\n';
+	}
+	std::cout << "--------------------------" << '\n';
+	Point::swapPoint( this->points[5], this->points[1] );
+	for (size_t y = 0; y < this->size * this->size; y++) {
+		std::cout << (this->points[y]).toString() << '\n';
+	}
+}
+
 Node::Node( size_t const size, std::string **input ) : size(size) {
 	this->array = new size_t*[size];
 	for (size_t i = 0; i < size; i++) {
@@ -112,7 +201,6 @@ Node::Node( Node const & src ) {
 /* MEMBER OPERATORS OVERLOAD =================================================*/
 Node		&Node::operator=( Node const & rhs ) {
 	this->size = rhs.size;
-	std::cout << size << '\n';
 	this->points = rhs.points;
 
 	this->array = new size_t*[this->size];

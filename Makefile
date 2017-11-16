@@ -7,6 +7,8 @@ SRC = 	$(SDIR)test.cpp \
 		$(SDIR)Point.class.cpp \
 		$(SDIR)Env.class.cpp \
 		$(SDIR)options_handling.cpp \
+		$(SDIR)treat_input.cpp \
+		$(SDIR)tools.cpp \
 		$(SDIR)error.cpp
 
 OBJ = $(SRC:.cpp=.o)

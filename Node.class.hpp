@@ -9,7 +9,6 @@
 class Node {
 
 private:
-	Node( void );
 
 protected:
 
@@ -19,6 +18,7 @@ public:
 	std::map<size_t, Point>	points;
 	size_t					**array;
 
+	Node( size_t const size );
 	Node( size_t const size, std::string **input );
 	Node( Node const & src );
 	~Node( void );
