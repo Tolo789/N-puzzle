@@ -93,9 +93,10 @@ int				main(int ac, char **av) {
 		return (ft_error(INVALID_PARAM_COMB, 1));
 	}
 
-	std::string **ret = treatInput("1 2 3\n8 5 4\n7 0 6");
+	// std::string **ret = treatInput("5 4 2\n7 0 6\n3 8 1");
+	std::string **ret = treatInput("1 2 3\n8 4 0\n7 6 5");
 	Node *startNode = new Node(3, ret);
-	std::cout << "RUNNNN" << '\n';
+	std::cout << " ### RUN A-STAR #########################" << '\n';
 	runAStar(startNode);
 	// if ( read_file(av[ac - 1], input) < 0 )
 	// 	return (1);

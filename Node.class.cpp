@@ -9,7 +9,7 @@
 
 
 /* CONSTRUCTORS ==============================================================*/
-Node::Node( size_t const size, std::string **input ) : size(size) {
+Node::Node( size_t const size, std::string **input ) : size(size), depth(0) {
 	this->array = new size_t*[size];
 	for (size_t i = 0; i < size; i++) {
 		this->array[i] = new size_t[size];
@@ -114,6 +114,7 @@ Node		&Node::operator=( Node const & rhs ) {
 	this->size = rhs.size;
 	// std::cout << size << '\n';
 	this->points = rhs.points;
+	this->depth = rhs.depth;
 
 	this->array = new size_t*[this->size];
 	for (size_t i = 0; i < this->size; i++) {
@@ -124,6 +125,45 @@ Node		&Node::operator=( Node const & rhs ) {
 	}
 	return ( *this );
 }
+
+bool		Node::operator<( const Node& rhs ) {
+	size_t lTotScore = this->depth + this->score;
+	size_t rTotScore = rhs.depth + rhs.score;
+	if (lTotScore < rTotScore)
+		return true;
+	else if (lTotScore > rTotScore)
+		return false;
+	else if (this->depth < rhs.depth)
+		return true;
+	return false;
+}
+
+bool		Node::operator==( const Node& rhs ) {
+	// consider equal with comparison of points, not of depth
+	if (this->score != rhs.score)
+		return false;
+
+	size_t lSize = this->points.size();
+	if (lSize != rhs.points.size())
+		return false;
+
+	std::map<size_t, Point>::iterator lIt = this->points.begin();
+	std::map<size_t, Point>::const_iterator rIt = rhs.points.begin();
+	while (lSize > 0) {
+		if (lIt->second.x_current != rIt->second.x_current)
+			return false;
+		if (lIt->second.y_current != rIt->second.y_current)
+			return false;
+		lIt++;
+		rIt++;
+		lSize--;
+	}
+	return true;
+}
+
+// bool		Node::operator!=( const Node& rhs ) {
+// 	return !(this == rhs);
+// }
 
 
 /* DESTRUCTOR ================================================================*/
@@ -178,12 +218,12 @@ void			Node::updateScore(void) {
 std::string		Node::toString(void) {
 	std::stringstream		s;
 
-	s << "Score: " << this->score << "\nPoints:\n";
+	// s << "Score: " << this->score << "\nPoints:\n";
 	// std::map<size_t, Point>::iterator it;
 	// for (it = this->points.begin(); it != this->points.end(); it++) {
 	// 	s << "\t" << (it->second).toString();
 	// }
-	s << "Graphical:" << std::endl;
+	// s << "Graphical:" << std::endl;
 	size_t i = 0;
 	size_t j;
 	while (i < this->size) {
