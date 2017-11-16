@@ -93,8 +93,11 @@ int				main(int ac, char **av) {
 		return (ft_error(INVALID_PARAM_COMB, 1));
 	}
 
-	// std::string **ret = treatInput("5 4 2\n7 0 6\n3 8 1");
-	std::string **ret = treatInput("1 2 3\n8 4 0\n7 6 5");
+	std::string **ret;
+	// ret = treatInput("5 4 2\n7 0 6\n3 8 1");
+	// ret = treatInput("0 1 2\n8 6 4\n5 7 3");
+	// ret = treatInput("8 1 2\n7 4 3\n0 6 5");
+	ret = treatInput("1 2 0\n8 4 3\n7 6 5"); // 2 moves to solve
 	Node *startNode = new Node(3, ret);
 	std::cout << " ### RUN A-STAR #########################" << '\n';
 	runAStar(startNode);

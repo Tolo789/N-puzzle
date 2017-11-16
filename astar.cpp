@@ -4,7 +4,7 @@
 #include <algorithm>
 #include "astar.hpp"
 
-static void	clearNodeVector(std::vector<Node *> myVector) {
+static void	clearNodeVector(std::vector<Node *> &myVector) {
 	std::cout << "Vector size before clearing: " << myVector.size() << std::endl;
 
 	std::vector<Node *>::iterator it;
@@ -17,9 +17,18 @@ static void	clearNodeVector(std::vector<Node *> myVector) {
 	std::cout << "Vector size after clearing: " << myVector.size() << std::endl << std::endl;
 }
 
-static Node		*swapNode(Node const &original, int const direction) {
-	Node *newNode = new Node(original);
+static void printNodeVector(std::vector<Node *> &myVector) {
+	std::vector<Node *>::iterator it = myVector.begin();
+	while (it != myVector.end()) {
+		std::cout << (*it)->toString() << std::endl;
+		it++;
+	}
+}
+
+static Node		*swapNode(Node *original, int const direction) {
+	Node *newNode = new Node(*original);
 	newNode->depth += 1;
+	newNode->prev = original;
 	// TODO: set parent
 
 	std::map<size_t, Point>::iterator zero = newNode->points.find(0);
@@ -61,42 +70,76 @@ static Node		*swapNode(Node const &original, int const direction) {
 	return (newNode);
 }
 
-// static std::vector<Node *>::iterator  findNodeInVector(std::vector<Node *>  myVector, Node *target) {
-// 	std::vector<Node *>::iterator it;
-// 	size_t upBound = myVector.size();
-// 	size_t downBound = 0;
-// 	size_t vectorIndex = (upBound + downBound) / 2;
-//
-// 	// TODO: to optimize search do dicotomial search based on total score (depth + score)
-//
-// 	size_t targetScore = target->score + target->depth;
-// 	size_t tmpScore;
-// 	while (vectorIndex != downBound) {
-// 		tmpScore = myVector[vectorIndex]->score + myVector[vectorIndex]->depth;
-// 		if (tmpScore == targetScore) {
-// 			// nodes where total score are equals are sorted by depth first
-// 			// at first, adapt up/down bounds to the right depth
-// 			// if
-//
-//
-// 			// then iterate over all elem with same depth
-// 		}
-// 		else if (tmpScore > targetScore) { // look on the right side
-// 			upBound = vectorIndex;
-// 			vectorIndex = (upBound + downBound) / 2;
-// 		}
-// 		else if (tmpScore < targetScore) {  // look on the left side
-// 			downBound = vectorIndex;
-// 			vectorIndex = (upBound + downBound) / 2;
-// 		}
-// 	}
-//
-// 	return myVector.begin() + vectorIndex;
-// }
+static std::vector<Node *>::iterator  findNodeInVector(std::vector<Node *>  &myVector, Node *target) {
+	std::vector<Node *>::iterator it;
+	size_t upBound = myVector.size();
+	if (upBound > 0)
+		upBound--;
+	size_t downBound = 0;
+	size_t vectorIndex = (upBound + downBound) / 2;
 
-// void printVector() {
-//
-// }
+	if (upBound == 0)
+		return myVector.begin();
+
+	// TODO: to optimize search do dicotomial search based on total score (depth + score)
+	// std::cout << std::endl << std::endl << "- Searching: " << target->toString() << std::endl;
+	// std::cout << "- In:" << std::endl;
+	// printNodeVector(myVector);
+
+
+	size_t tmpScore;
+	// std::cout << std::endl << std::endl;
+	// std::cout << "Index: " << std::endl;
+	do {
+		std::cout << "toto" << std::endl;
+		// std::cout << "a: " << vectorIndex << std::endl;
+		if (target < myVector[vectorIndex]) { // look on the right side
+			upBound = vectorIndex;
+			vectorIndex = (upBound + downBound) / 2;
+		}
+		else if (myVector[vectorIndex] < target) {  // look on the left side
+			downBound = vectorIndex;
+			vectorIndex = (upBound + downBound) / 2;
+		}
+		else {
+			// iter from Down to Up to find exact match
+			size_t tmpIndex = vectorIndex;
+			while (vectorIndex >= downBound) {
+				// std::cout << "b: " << vectorIndex << std::endl;
+				if (myVector[vectorIndex] == target)
+					return myVector.begin() + vectorIndex;
+				if (vectorIndex == 0)
+					return myVector.begin() + vectorIndex;
+				vectorIndex--;
+			}
+
+			vectorIndex = tmpIndex;
+			while (vectorIndex <= upBound) {
+				// std::cout << "c: " << vectorIndex << std::endl;
+				if (myVector[vectorIndex] == target)
+					return myVector.begin() + vectorIndex;
+				if (vectorIndex + 1 == 0)
+					return myVector.begin() + vectorIndex;
+				vectorIndex++;
+			}
+		}
+	} while (vectorIndex != downBound);
+
+
+	return myVector.begin() + vectorIndex;
+}
+
+static std::vector<Node *>::iterator  dicoSearch(std::vector<Node *> &myVector, Node *targetNode) {
+	std::vector<Node *>::iterator it = myVector.begin();
+
+	while (it != myVector.end()) {
+		if (!(**it < *targetNode))
+			break;
+		it++;
+	}
+
+	return it;
+}
 
 void		runAStar(Node *startNode) {
 	// A* begin
@@ -107,17 +150,33 @@ void		runAStar(Node *startNode) {
 	openList.insert(it, startNode);
 
 	// A* main loop
-	Point tmp;
+	Point tmpPoint;
 	Node *tmpNode;
 	int i; // counter for swaps in 4 directions
 	std::vector<Node *>::iterator  vectorIndex;
+	Node *newNode;
+	int x = 0;
 	do {
-		// TODO: choose node based on heuristic
-		// std::cout << "\n --- Heuristic search ----------------------------------" << std::endl;
+		// if (x > 1)
+		// 	break;
+		x++;
+		// TODO: choose node based on heuristic, take first if already sorted
+		std::cout << "\n --- Heuristic search ----------------------------------" << std::endl;
+		std::cout << "Open" << std::endl;
+		printNodeVector(openList);
+		// std::cout << "Closed" << std::endl;
+		// printNodeVector(closedList);
 		it = openList.begin();
 		tmpNode = *it;
+
 		// Remove node from openList and put in closedList
-		closedList.insert(closedList.begin(), *it);
+		// vectorIndex = dicoSearch(closedList, tmpNode);
+		vectorIndex = findNodeInVector(closedList, tmpNode);
+		if (closedList.size() == 0 || vectorIndex == closedList.end())
+			closedList.push_back(tmpNode);
+		else {
+			closedList.insert(vectorIndex, tmpNode);
+		}
 		openList.erase(it);
 
 		// std::cout << tmpNode->toString() << std::endl;
@@ -127,63 +186,57 @@ void		runAStar(Node *startNode) {
 		}
 
 		// foreach neighbour: check if already in one list + check if it's a shortest path
-		tmp = tmpNode->points.find(0)->second;
+		tmpPoint = tmpNode->points.find(0)->second;
 		i = 0;
-		Node *newNode;
 		while (i < 4) {
-			if ((i == 0 && tmp.y_current != 0) ||						// swap up
-				(i == 1 && tmp.y_current != tmpNode->size - 1) ||			// swap down
-				(i == 2 && tmp.x_current != 0) ||						// swap left
-				(i == 3 && tmp.x_current != tmpNode->size - 1)) {			// swap right
-				newNode = swapNode(*tmpNode, i);
-				// std::cout << newNode->toString() << std::endl;
-				// std::cout << "Searching.." << std::endl;
-				vectorIndex = std::lower_bound(closedList.begin(), closedList.end(), newNode);
-				// vectorIndex = vectorLowerBound(closedList, newNode);
-				if (vectorIndex == closedList.end()) {
-					vectorIndex = std::lower_bound(openList.begin(), openList.end(), newNode);
-					if (vectorIndex == openList.end() || !(*vectorIndex == newNode)) {
-						// std::cout << "Not found in open list, adding newNode to it" << std::endl;
+			if ((i == 0 && tmpPoint.y_current != 0) ||						// swap up
+				(i == 1 && tmpPoint.y_current != tmpNode->size - 1) ||			// swap down
+				(i == 2 && tmpPoint.x_current != 0) ||						// swap left
+				(i == 3 && tmpPoint.x_current != tmpNode->size - 1)) {			// swap right
 
+				newNode = swapNode(tmpNode, i);
+				// std::cout << newNode->toString();
+				// vectorIndex = dicoSearch(closedList, newNode);
+				vectorIndex = findNodeInVector(closedList, newNode);
+				if (!(*vectorIndex == newNode)) {
+					// vectorIndex = dicoSearch(openList, newNode);
+					vectorIndex = findNodeInVector(openList, newNode);
+					if (openList.size() == 0 || vectorIndex == openList.end() || !(*vectorIndex == newNode)) {
 						// std::cout << "Before:" << std::endl;
-						// std::cout << tmpNode->toString() << std::endl;
+						// std::cout << "Offset: " << (vectorIndex - openList.begin()) << std::endl << std::endl << std::endl;
 						// printVector(openList);
 
-						if (vectorIndex == openList.end())
+						if (openList.size() == 0 || vectorIndex == openList.end())
 							openList.push_back(newNode);
-						else
+						else {
 							openList.insert(vectorIndex, newNode);
+						}
 
 
 						// std::cout << "After:" << std::endl;
 						// std::cout << tmpNode->toString() << std::endl;
 						// printVector(openList);
 					}
-					// else
-					// 	std::cout << "Already in open list" << std::endl;
 
+					// if in openList then check if depth is less, if so update prev node
 				}
-				// else
-				// 	std::cout << "Found in closed list -> nothing to do" << std::endl;
-
-				// check if node is in closedList
-					// if not check if node is in openList
-						// if in openList then check if depth is less, if so update prev node
-						// if not in openList, then add it
-				// std::cout << "" << std::endl;
 			}
-			// std::cout << "" << std::endl;
 			i++;
 		}
 
 	} while (openList.size() > 0);
+	std::cout << " ------------------------------------------------------------" << std::endl;
 
 	// Reconstruct path to solution
 	if (tmpNode->score != 0) {
 		std::cout << "Solution not found" << std::endl;
 	}
 	else {
-		std::cout << "Solution found" << std::endl;
+		std::cout << "Solution found!" << std::endl;
+		do {
+			std::cout << tmpNode->toString() << std::endl;
+			tmpNode = tmpNode->prev;
+		} while (tmpNode);
 	}
 
 	// Clear vectors

@@ -9,7 +9,7 @@
 
 
 /* CONSTRUCTORS ==============================================================*/
-Node::Node( size_t const size, std::string **input ) : size(size), depth(0) {
+Node::Node( size_t const size, std::string **input ) : size(size), depth(0), prev(NULL) {
 	this->array = new size_t*[size];
 	for (size_t i = 0; i < size; i++) {
 		this->array[i] = new size_t[size];
@@ -115,6 +115,7 @@ Node		&Node::operator=( Node const & rhs ) {
 	// std::cout << size << '\n';
 	this->points = rhs.points;
 	this->depth = rhs.depth;
+	this->prev = rhs.prev;
 
 	this->array = new size_t*[this->size];
 	for (size_t i = 0; i < this->size; i++) {
@@ -133,7 +134,7 @@ bool		Node::operator<( const Node& rhs ) {
 		return true;
 	else if (lTotScore > rTotScore)
 		return false;
-	else if (this->depth < rhs.depth)
+	else if (this->depth < rhs.depth)  // if same score, then compare depth
 		return true;
 	return false;
 }
@@ -218,7 +219,8 @@ void			Node::updateScore(void) {
 std::string		Node::toString(void) {
 	std::stringstream		s;
 
-	// s << "Score: " << this->score << "\nPoints:\n";
+	s << "Score: " << this->score << ", Depth: " << this->depth << std::endl;
+	// s << "Points:\n";
 	// std::map<size_t, Point>::iterator it;
 	// for (it = this->points.begin(); it != this->points.end(); it++) {
 	// 	s << "\t" << (it->second).toString();
