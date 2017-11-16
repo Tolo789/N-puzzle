@@ -170,6 +170,7 @@ int		run(Node *startNode) {
 int				main(int ac, char **av) {
 	std::string		input;
 	t_treatInput	retTreatinput;
+	Node			*startNode;
 
 	t_puzzle p = {0, 0};
 	if ( get_options(&ac, av) ) {
@@ -183,10 +184,10 @@ int				main(int ac, char **av) {
 	} else if ( ac == 2 && read_file(av[ac - 1], &input) < 0 ) {
 		return (ft_error("invalid input file", 1));
 	} else if ( !input.length() ) {
-		// generate_puzzle();
-		Node *startNode = new Node( Env::puzzle.size );
+		startNode = new Node( Env::puzzle.size );
 	} else {
 		treatInput(&retTreatinput, input);
+		startNode = new Node( retTreatinput.size, retTreatinput.ret );
 	}
 
 	// std::string **ret = treatInput("1 2 3\n8 5 4\n7 0 6");

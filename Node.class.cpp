@@ -3,6 +3,7 @@
 #include <string>
 
 #include "Node.class.hpp"
+#include "Env.class.hpp"
 
 
 /* STATIC VARIABLES ==========================================================*/
@@ -10,6 +11,7 @@
 
 /* CONSTRUCTORS ==============================================================*/
 Node::Node( size_t const size ) : size(size) {
+	std::srand(std::time(0));
 	this->array = new size_t*[size];
 	for (size_t i = 0; i < size; i++) {
 		this->array[i] = new size_t[size];
@@ -69,7 +71,7 @@ Node::Node( size_t const size ) : size(size) {
 				y--;
 				break;
 			default:
-			break;
+				break;
 		}
 		i++;
 	}
@@ -88,14 +90,126 @@ Node::Node( size_t const size ) : size(size) {
 		delete [] map[i];
 	}
 	delete [] map;
-	for (size_t y = 0; y < this->size * this->size; y++) {
-		std::cout << (this->points[y]).toString() << '\n';
+	size_t	lastMove = 0;
+	Point	zero = this->points[0];
+	int		neighbours;
+	size_t	rand;
+	size_t	tmpValue;
+
+	Point	top;
+	Point	left;
+	Point	bottom;
+	Point	right;
+	for (size_t n = 0; n < Env::puzzle.iterations; n++) {
+		neighbours = 0;
+		if (zero.x_current > 0) {
+			left = this->points[this->array[zero.y_current][zero.x_current - 1]];
+			if (left.value != lastMove) {
+				neighbours++;
+			} else {
+				left = zero;
+			}
+		} else {
+			left = zero;
+		}
+		if (zero.y_current > 0) {
+			top = this->points[this->array[zero.y_current - 1][zero.x_current]];
+			if (top.value != lastMove) {
+				neighbours++;
+			} else {
+				top = zero;
+			}
+		} else {
+			top = zero;
+		}
+		if (zero.x_current < this->size - 1) {
+			right = this->points[this->array[zero.y_current][zero.x_current + 1]];
+			if (right.value != lastMove) {
+				neighbours++;
+			} else {
+				right = zero;
+			}
+		} else {
+			right = zero;
+		}
+		if (zero.y_current < this->size - 1) {
+			bottom = this->points[this->array[zero.y_current + 1][zero.x_current]];
+			if (bottom.value != lastMove) {
+				neighbours++;
+			} else {
+				bottom = zero;
+			}
+		} else {
+			bottom = zero;
+		}
+
+		// std::cout << "top:" << top.value << '\n';
+		// std::cout << "left:" << left.value << '\n';
+		// std::cout << "bottom:" << bottom.value << '\n';
+		// std::cout << "right:" << right.value << '\n';
+		rand = std::rand() % neighbours;
+		// std::cout << "neighbours:"<<neighbours << '\n';
+		if (rand == 0 && zero.value != left.value) {
+			// std::cout << neighbours << " "<< rand << '\n';
+			Point::swapPoint( this->points[0], this->points[left.value] );
+			rand--;
+			tmpValue = this->array[zero.y_current][zero.x_current];
+			this->array[zero.y_current][zero.x_current] = this->array[left.y_current][left.x_current];
+			this->array[left.y_current][left.x_current] = tmpValue;
+		}
+		else if (zero.value != left.value) {
+			rand--;
+		}
+		if (rand == 0 && zero.value != bottom.value) {
+			// std::cout << neighbours << " "<< rand << '\n';
+			Point::swapPoint( this->points[0], this->points[bottom.value] );
+			rand--;
+			tmpValue = this->array[zero.y_current][zero.x_current];
+			this->array[zero.y_current][zero.x_current] = this->array[bottom.y_current][bottom.x_current];
+			this->array[bottom.y_current][bottom.x_current] = tmpValue;
+		}
+		else if (zero.value != bottom.value) {
+			rand--;
+		}
+		if (rand == 0 && zero.value != top.value) {
+			// std::cout << neighbours << " "<< rand << '\n';
+			Point::swapPoint( this->points[0], this->points[top.value] );
+			rand--;
+			tmpValue = this->array[zero.y_current][zero.x_current];
+			this->array[zero.y_current][zero.x_current] = this->array[top.y_current][top.x_current];
+			this->array[top.y_current][top.x_current] = tmpValue;
+		}
+		else if (zero.value != top.value) {
+			rand--;
+		}
+		if (rand == 0 && zero.value != right.value) {
+			Point::swapPoint( this->points[0], this->points[right.value] );
+			rand--;
+			tmpValue = this->array[zero.y_current][zero.x_current];
+			this->array[zero.y_current][zero.x_current] = this->array[right.y_current][right.x_current];
+			this->array[right.y_current][right.x_current] = tmpValue;
+		}
+		else if (zero.value != right.value) {
+			rand--;
+		}
+		zero = this->points[0];
+		// std::cout << this->toString() << '\n';
 	}
-	std::cout << "--------------------------" << '\n';
-	Point::swapPoint( this->points[5], this->points[1] );
-	for (size_t y = 0; y < this->size * this->size; y++) {
-		std::cout << (this->points[y]).toString() << '\n';
-	}
+	Node::updateScore();
+	// std::cout << top.toString() << '\n';
+	// std::cout << left.toString() << '\n';
+	// std::cout << bottom.toString() << '\n';
+	// std::cout << right.toString() << '\n';
+	// }
+	// for (size_t y = 0; y < this->size * this->size; y++) {
+	// 	std::cout << (this->points[y]).toString() << '\n';
+	// }
+	// std::cout << "--------------------------" << '\n';
+	// Point::swapPoint( this->points[5], this->points[1] );
+	// for (size_t y = 0; y < this->size * this->size; y++) {
+		// std::cout << (this->points[y]).toString() << '\n';
+	// }
+	std::cout << this->toString() << '\n';
 }
 
 Node::Node( size_t const size, std::string **input ) : size(size) {
