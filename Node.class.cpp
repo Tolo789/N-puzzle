@@ -131,7 +131,6 @@ bool		Node::operator<( const Node& rhs ) {
 	size_t lTotScore = this->depth + this->score;
 	size_t rTotScore = rhs.depth + rhs.score;
 	bool ret = false;
-	// std::cout << "Comparing " << lTotScore << " with " << rTotScore << std::endl;
 
 	if (lTotScore < rTotScore)
 		ret = true;
@@ -140,7 +139,6 @@ bool		Node::operator<( const Node& rhs ) {
 	else if (this->depth <= rhs.depth)  // if same score, then compare depth
 		ret = true;
 
-	// std::cout << "Result: " << ret << std::endl;
 	return ret;
 }
 

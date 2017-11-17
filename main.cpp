@@ -94,10 +94,12 @@ int				main(int ac, char **av) {
 	}
 
 	std::string **ret;
-	ret = treatInput("5 4 2\n7 0 6\n3 8 1"); // 30 moves to solve, VERY slow..!
-	ret = treatInput("0 1 2\n8 6 4\n5 7 3"); // 18 moves to solve
+	ret = treatInput("5 4 2\n7 0 6\n3 8 1"); // 26 moves to solve
+	ret = treatInput("0 1 2\n8 6 4\n5 7 3"); // 16 moves to solve
 	// ret = treatInput("8 1 2\n7 4 3\n0 6 5"); // 6 moves to solve
 	// ret = treatInput("1 2 0\n8 4 3\n7 6 5"); // 2 moves to solve
+	// ret = treatInput("12 3 5 2\n0 13 9 14\n15 4 11 8\n10 7 1 6"); // 4x4, HARD and LONG
+	// ret = treatInput("1 2 3 4\n12 13 14 5\n11 9 6 7\n10 0 8 15"); // 4x4, 7 moves very easy
 	Node *startNode = new Node(3, ret);
 	std::cout << " ### RUN A-STAR #########################" << '\n';
 	runAStar(startNode, ac > 1);

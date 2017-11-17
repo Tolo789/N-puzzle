@@ -95,27 +95,21 @@ static std::vector<Node *>::iterator  dicoSearch(std::vector<Node *> &myVector, 
 			vectorIndex = (upBound + downBound) / 2;
 		}
 		else if (*(myVector[vectorIndex]) < *targetNode) {  // look on the left side
-			// std::cout << "must search bigger" << std::endl;
 			downBound = vectorIndex + 1;
 			vectorIndex = (upBound + downBound) / 2;
 		}
 		else {
-			// std::cout << "@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@" << std::endl;
-			// iter from Down to Up to find exact match
+			// iter from Down to Up to find LAST exact match
 			size_t tmpIndex = vectorIndex;
 			while (vectorIndex >= downBound) {
-				if (*(myVector[vectorIndex]) == *targetNode)
-					return myVector.begin() + vectorIndex;
-				if (vectorIndex == 0)
+				if (*(myVector[vectorIndex]) == *targetNode || vectorIndex == 0)
 					return myVector.begin() + vectorIndex;
 				vectorIndex--;
 			}
 
 			vectorIndex = tmpIndex;
 			while (vectorIndex <= upBound) {
-				if (*(myVector[vectorIndex]) == *targetNode)
-					return myVector.begin() + vectorIndex;
-				if (vectorIndex + 1 == 0)
+				if (*(myVector[vectorIndex]) == *targetNode || vectorIndex + 1 == 0)
 					return myVector.begin() + vectorIndex;
 				vectorIndex++;
 			}
@@ -130,8 +124,13 @@ static std::vector<Node *>::iterator  findNodeInVector(std::vector<Node *>  &myV
 	std::vector<Node *>::iterator it = myVector.begin();
 
 	while (it != myVector.end()) {
+		// exit loop either if we found same value or a bigger one
 		if (!(**it < *targetNode))
 			break;
+		else if (**it == *targetNode) {
+			break;
+		}
+
 		it++;
 	}
 
@@ -153,15 +152,20 @@ void		runAStar(Node *startNode, bool fast) {
 	std::vector<Node *>::iterator  vectorIndex;
 	Node *newNode;
 	int x = 0;
+	int limit = 400000000;
+	// limit = 4;
 	do {
-		if (++x > 4)
+
+		if (++x > limit)
 			break;
 		// TODO: choose node based on heuristic, take first if already sorted
-		std::cout << "\n --- Heuristic search ----------------------------------" << std::endl;
-		// std::cout << "Open" << std::endl;
-		// printNodeVector(openList);
-		// std::cout << "Closed" << std::endl;
-		// printNodeVector(closedList);
+		if (x == limit) {
+			std::cout << "\n --- Heuristic search ----------------------------------" << std::endl;
+			std::cout << "Open" << std::endl;
+			printNodeVector(openList);
+			std::cout << "Closed" << std::endl;
+			printNodeVector(closedList);
+		}
 		it = openList.begin();
 		tmpNode = *it;
 
@@ -192,28 +196,47 @@ void		runAStar(Node *startNode, bool fast) {
 				(i == 3 && tmpPoint.x_current != tmpNode->size - 1)) {			// swap right
 
 				newNode = swapNode(tmpNode, i);
-				std::cout << std::endl << "@" << std::endl << newNode->toString();
-
+				if (x == limit)
+					std::cout << std::endl << "@" << std::endl << newNode->toString();
 				if (fast)
 					vectorIndex = dicoSearch(closedList, newNode);
 				else
 					vectorIndex = findNodeInVector(closedList, newNode);
-				if (!(*vectorIndex == newNode)) {
+				// if ( || !(**vectorIndex == *newNode)) {
+				if (closedList.size() == 0 || vectorIndex == closedList.end() || !(**vectorIndex == *newNode)) {
 					if (fast)
 						vectorIndex = dicoSearch(openList, newNode);
 					else
 						vectorIndex = findNodeInVector(openList, newNode);
-					if (openList.size() == 0 || vectorIndex == openList.end() || !(*vectorIndex == newNode)) {
-						std::cout << "Offset: " << vectorIndex - openList.begin() << std::endl;
+					if (x == limit) {
+						std::vector<Node *>::iterator  tmpIndex = vectorIndex;
+						if (tmpIndex != openList.begin())
+							tmpIndex--;
+
+
+						// std::cout << std::endl << "f" << std::endl << (*tmpIndex)->toString();
+						// if (**tmpIndex == *newNode)
+							// std::cout << "Same..!" << std::endl;
+					}
+					if (openList.size() == 0 || vectorIndex == openList.end() || !(**vectorIndex == *newNode)) {
+
+						if (x == limit)
+							std::cout << "Offset: " << vectorIndex - openList.begin() << std::endl;
+
 						if (openList.size() == 0 || vectorIndex == openList.end())
 							openList.push_back(newNode);
 						else {
 							openList.insert(vectorIndex, newNode);
 						}
 					}
+					else if (x == limit) {
+						// if in openList then check if depth is less, if so update prev node
+						std::cout << "Already in open list..!" << std::endl << std::endl;
+					}
 
-					// if in openList then check if depth is less, if so update prev node
 				}
+				else if (x == limit)
+					std::cout << "Already in closed list..!" << std::endl << std::endl;
 			}
 			i++;
 		}
