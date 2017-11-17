@@ -136,7 +136,8 @@ bool		Node::operator<( const Node& rhs ) {
 		ret = true;
 	else if (lTotScore > rTotScore)
 		ret = false;
-	else if (this->depth <= rhs.depth)  // if same score, then compare depth
+	else if (this->depth < rhs.depth)  // if same score, then compare depth
+	// else if (this->depth <= rhs.depth)  // have to choose which one to take -> different size of open/closed list
 		ret = true;
 
 	return ret;

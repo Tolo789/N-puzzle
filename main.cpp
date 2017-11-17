@@ -8,6 +8,7 @@
 #include "Env.class.hpp"
 #include "options_handling.hpp"
 #include "astar.hpp"
+#include "astar2.hpp"
 #include "error.hpp"
 
 #include <stdio.h>//
@@ -95,14 +96,16 @@ int				main(int ac, char **av) {
 
 	std::string **ret;
 	ret = treatInput("5 4 2\n7 0 6\n3 8 1"); // 26 moves to solve
-	ret = treatInput("0 1 2\n8 6 4\n5 7 3"); // 16 moves to solve
+	// ret = treatInput("0 1 2\n8 6 4\n5 7 3"); // 16 moves to solve
 	// ret = treatInput("8 1 2\n7 4 3\n0 6 5"); // 6 moves to solve
 	// ret = treatInput("1 2 0\n8 4 3\n7 6 5"); // 2 moves to solve
 	// ret = treatInput("12 3 5 2\n0 13 9 14\n15 4 11 8\n10 7 1 6"); // 4x4, HARD and LONG
-	// ret = treatInput("1 2 3 4\n12 13 14 5\n11 9 6 7\n10 0 8 15"); // 4x4, 7 moves very easy
+	// ret = treatInput("11 2 3 4\n14 1 13 9\n5 0 8 6\n12 10 15 7"); // 4x4, same as above
+	// ret = treatInput("2 3\n0 1");
 	Node *startNode = new Node(3, ret);
 	std::cout << " ### RUN A-STAR #########################" << '\n';
-	runAStar(startNode, ac > 1);
+	// runAStar(startNode, ac > 1);
+	runAStar2(startNode, ac > 1);
 	// if ( read_file(av[ac - 1], input) < 0 )
 	// 	return (1);
 	// if (!input) {
@@ -112,7 +115,7 @@ int				main(int ac, char **av) {
 	// }
 	delete [] ret[0];
 	delete [] ret[1];
-	delete [] ret[2];
+	// delete [] ret[2];
 	delete [] ret;
 	return 0;
 }

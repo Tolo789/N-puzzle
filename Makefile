@@ -8,7 +8,8 @@ SRC = 	$(SDIR)main.cpp \
 		$(SDIR)Env.class.cpp \
 		$(SDIR)options_handling.cpp \
 		$(SDIR)error.cpp \
-		$(SDIR)astar.cpp
+		$(SDIR)astar.cpp \
+		$(SDIR)astar2.cpp
 
 OBJ = $(SRC:.cpp=.o)
 

@@ -79,14 +79,15 @@ static std::vector<Node *>::iterator  dicoSearch(std::vector<Node *> &myVector, 
 	size_t downBound = 0;
 	size_t vectorIndex = (upBound + downBound) / 2;
 
-	// TODO: to optimize search do dicotomial search based on total score (depth + score)
+	// TODO: dicotomial search
 
 	// Fast checks if target is bigger/smaller than every element in vector
 	if (*targetNode < *(myVector[downBound]))
 		return myVector.begin();
-	else if (*(myVector[downBound]) < *targetNode)
+	else if (*(myVector[upBound]) < *targetNode)
 		return myVector.end();
 
+	// Main loop
 	do {
 		if (*targetNode < *(myVector[vectorIndex])) { // look on the right side
 			upBound = vectorIndex;
@@ -99,11 +100,13 @@ static std::vector<Node *>::iterator  dicoSearch(std::vector<Node *> &myVector, 
 			vectorIndex = (upBound + downBound) / 2;
 		}
 		else {
-			// iter from Down to Up to find LAST exact match
+			// Check if target is between Down and Up
 			size_t tmpIndex = vectorIndex;
 			while (vectorIndex >= downBound) {
 				if (*(myVector[vectorIndex]) == *targetNode || vectorIndex == 0)
 					return myVector.begin() + vectorIndex;
+				// if () // we are in a section where value is less than target, so break
+
 				vectorIndex--;
 			}
 
@@ -125,11 +128,10 @@ static std::vector<Node *>::iterator  findNodeInVector(std::vector<Node *>  &myV
 
 	while (it != myVector.end()) {
 		// exit loop either if we found same value or a bigger one
-		if (!(**it < *targetNode))
+		if (**it == *targetNode)
 			break;
-		else if (**it == *targetNode) {
+		else if (!(**it < *targetNode))
 			break;
-		}
 
 		it++;
 	}
@@ -153,7 +155,7 @@ void		runAStar(Node *startNode, bool fast) {
 	Node *newNode;
 	int x = 0;
 	int limit = 400000000;
-	// limit = 4;
+	// limit = 3;
 	do {
 
 		if (++x > limit)
@@ -174,6 +176,8 @@ void		runAStar(Node *startNode, bool fast) {
 			vectorIndex = dicoSearch(closedList, tmpNode);
 		else
 			vectorIndex = findNodeInVector(closedList, tmpNode);
+
+		// node will never be already in closed list, so we know that we can always add it
 		if (closedList.size() == 0 || vectorIndex == closedList.end())
 			closedList.push_back(tmpNode);
 		else {
@@ -197,31 +201,20 @@ void		runAStar(Node *startNode, bool fast) {
 
 				newNode = swapNode(tmpNode, i);
 				if (x == limit)
-					std::cout << std::endl << "@" << std::endl << newNode->toString();
+					std::cout << std::endl << "Created new node" << std::endl << newNode->toString();
 				if (fast)
 					vectorIndex = dicoSearch(closedList, newNode);
 				else
 					vectorIndex = findNodeInVector(closedList, newNode);
-				// if ( || !(**vectorIndex == *newNode)) {
 				if (closedList.size() == 0 || vectorIndex == closedList.end() || !(**vectorIndex == *newNode)) {
 					if (fast)
 						vectorIndex = dicoSearch(openList, newNode);
 					else
 						vectorIndex = findNodeInVector(openList, newNode);
-					if (x == limit) {
-						std::vector<Node *>::iterator  tmpIndex = vectorIndex;
-						if (tmpIndex != openList.begin())
-							tmpIndex--;
-
-
-						// std::cout << std::endl << "f" << std::endl << (*tmpIndex)->toString();
-						// if (**tmpIndex == *newNode)
-							// std::cout << "Same..!" << std::endl;
-					}
 					if (openList.size() == 0 || vectorIndex == openList.end() || !(**vectorIndex == *newNode)) {
 
 						if (x == limit)
-							std::cout << "Offset: " << vectorIndex - openList.begin() << std::endl;
+							std::cout << "Inserting in open list with offset: " << vectorIndex - openList.begin() << std::endl;
 
 						if (openList.size() == 0 || vectorIndex == openList.end())
 							openList.push_back(newNode);
