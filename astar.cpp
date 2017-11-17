@@ -88,37 +88,26 @@ static std::vector<Node *>::iterator  findNodeInVector(std::vector<Node *>  &myV
 
 
 	size_t tmpScore;
-	// std::cout << std::endl << std::endl;
-	// std::cout << "Index: " << std::endl;
 	do {
-		std::cout << "toto" << std::endl;
-		// std::cout << "a: " << vectorIndex << std::endl;
-		if (target < myVector[vectorIndex]) { // look on the right side
+		if (*target < *(myVector[vectorIndex])) { // look on the right side
 			upBound = vectorIndex;
 			vectorIndex = (upBound + downBound) / 2;
 		}
-		else if (myVector[vectorIndex] < target) {  // look on the left side
+		else if (*(myVector[vectorIndex]) < *target) {  // look on the left side
 			downBound = vectorIndex;
 			vectorIndex = (upBound + downBound) / 2;
 		}
 		else {
 			// iter from Down to Up to find exact match
 			size_t tmpIndex = vectorIndex;
-			while (vectorIndex >= downBound) {
-				// std::cout << "b: " << vectorIndex << std::endl;
-				if (myVector[vectorIndex] == target)
-					return myVector.begin() + vectorIndex;
-				if (vectorIndex == 0)
+			while (vectorIndex > downBound) {
+				if (myVector[vectorIndex] == target || vectorIndex == 0)
 					return myVector.begin() + vectorIndex;
 				vectorIndex--;
 			}
-
 			vectorIndex = tmpIndex;
-			while (vectorIndex <= upBound) {
-				// std::cout << "c: " << vectorIndex << std::endl;
-				if (myVector[vectorIndex] == target)
-					return myVector.begin() + vectorIndex;
-				if (vectorIndex + 1 == 0)
+			while (vectorIndex < upBound) {
+				if (myVector[vectorIndex] == target || vectorIndex + 1 == 0 || vectorIndex + 1 >= myVector.size())
 					return myVector.begin() + vectorIndex;
 				vectorIndex++;
 			}
@@ -164,8 +153,6 @@ void		runAStar(Node *startNode) {
 		std::cout << "\n --- Heuristic search ----------------------------------" << std::endl;
 		std::cout << "Open" << std::endl;
 		printNodeVector(openList);
-		// std::cout << "Closed" << std::endl;
-		// printNodeVector(closedList);
 		it = openList.begin();
 		tmpNode = *it;
 
@@ -179,7 +166,6 @@ void		runAStar(Node *startNode) {
 		}
 		openList.erase(it);
 
-		// std::cout << tmpNode->toString() << std::endl;
 		// check if node is goal, if so exit loop
 		if (tmpNode->score == 0) {
 			break;
@@ -195,30 +181,19 @@ void		runAStar(Node *startNode) {
 				(i == 3 && tmpPoint.x_current != tmpNode->size - 1)) {			// swap right
 
 				newNode = swapNode(tmpNode, i);
-				// std::cout << newNode->toString();
 				// vectorIndex = dicoSearch(closedList, newNode);
 				vectorIndex = findNodeInVector(closedList, newNode);
 				if (!(*vectorIndex == newNode)) {
 					// vectorIndex = dicoSearch(openList, newNode);
 					vectorIndex = findNodeInVector(openList, newNode);
 					if (openList.size() == 0 || vectorIndex == openList.end() || !(*vectorIndex == newNode)) {
-						// std::cout << "Before:" << std::endl;
-						// std::cout << "Offset: " << (vectorIndex - openList.begin()) << std::endl << std::endl << std::endl;
-						// printVector(openList);
 
 						if (openList.size() == 0 || vectorIndex == openList.end())
 							openList.push_back(newNode);
 						else {
 							openList.insert(vectorIndex, newNode);
 						}
-
-
-						// std::cout << "After:" << std::endl;
-						// std::cout << tmpNode->toString() << std::endl;
-						// printVector(openList);
 					}
-
-					// if in openList then check if depth is less, if so update prev node
 				}
 			}
 			i++;

@@ -134,9 +134,11 @@ bool		Node::operator<( const Node& rhs ) {
 		return true;
 	else if (lTotScore > rTotScore)
 		return false;
-	else if (this->depth < rhs.depth)  // if same score, then compare depth
-		return true;
-	return false;
+	else
+		return (this->depth < rhs.depth);
+	// else if (this->depth < rhs.depth)  // if same score, then compare depth
+	// 	return true;
+	// return false;
 }
 
 bool		Node::operator==( const Node& rhs ) {
