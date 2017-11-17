@@ -13,10 +13,12 @@ private:
 protected:
 
 public:
-	size_t					size;
+	size_t					size; // TODO: make it static
+	size_t					depth;
 	size_t					score;
 	std::map<size_t, Point>	points;
 	size_t					**array;
+	Node					*prev;
 
 	Node( size_t const size );
 	Node( size_t const size, std::string **input );
@@ -24,6 +26,8 @@ public:
 	~Node( void );
 
 	Node &	operator=( Node const & rhs );
+	bool	operator<( const Node& rhs );
+	bool	operator==( const Node& rhs );
 
 	static int	getFinalPosition( size_t const value, size_t **map, size_t const size, size_t *finalCoords );
 	void			updateScore(void);

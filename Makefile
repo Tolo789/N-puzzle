@@ -9,7 +9,8 @@ SRC = 	$(SDIR)test.cpp \
 		$(SDIR)options_handling.cpp \
 		$(SDIR)treat_input.cpp \
 		$(SDIR)tools.cpp \
-		$(SDIR)error.cpp
+		$(SDIR)error.cpp \
+		$(SDIR)astar.cpp
 
 OBJ = $(SRC:.cpp=.o)
 
