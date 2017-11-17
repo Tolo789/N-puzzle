@@ -150,15 +150,15 @@ void		runAStar(Node *startNode) {
 		// 	break;
 		x++;
 		// TODO: choose node based on heuristic, take first if already sorted
-		std::cout << "\n --- Heuristic search ----------------------------------" << std::endl;
-		std::cout << "Open" << std::endl;
-		printNodeVector(openList);
+		// std::cout << "\n --- Heuristic search ----------------------------------" << std::endl;
+		// std::cout << "Open" << std::endl;
+		// printNodeVector(openList);
 		it = openList.begin();
 		tmpNode = *it;
 
 		// Remove node from openList and put in closedList
-		// vectorIndex = dicoSearch(closedList, tmpNode);
-		vectorIndex = findNodeInVector(closedList, tmpNode);
+		vectorIndex = dicoSearch(closedList, tmpNode);
+		// vectorIndex = findNodeInVector(closedList, tmpNode);
 		if (closedList.size() == 0 || vectorIndex == closedList.end())
 			closedList.push_back(tmpNode);
 		else {
@@ -181,11 +181,11 @@ void		runAStar(Node *startNode) {
 				(i == 3 && tmpPoint.x_current != tmpNode->size - 1)) {			// swap right
 
 				newNode = swapNode(tmpNode, i);
-				// vectorIndex = dicoSearch(closedList, newNode);
-				vectorIndex = findNodeInVector(closedList, newNode);
+				vectorIndex = dicoSearch(closedList, newNode);
+				// vectorIndex = findNodeInVector(closedList, newNode);
 				if (!(*vectorIndex == newNode)) {
-					// vectorIndex = dicoSearch(openList, newNode);
-					vectorIndex = findNodeInVector(openList, newNode);
+					vectorIndex = dicoSearch(openList, newNode);
+					// vectorIndex = findNodeInVector(openList, newNode);
 					if (openList.size() == 0 || vectorIndex == openList.end() || !(*vectorIndex == newNode)) {
 
 						if (openList.size() == 0 || vectorIndex == openList.end())
@@ -215,7 +215,7 @@ void		runAStar(Node *startNode) {
 	}
 
 	// Clear vectors
-	clearNodeVector(openList);
-	clearNodeVector(closedList);
+	// clearNodeVector(openList);
+	// clearNodeVector(closedList);
 	return ;
 }

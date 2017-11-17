@@ -10,7 +10,7 @@
 
 
 /* CONSTRUCTORS ==============================================================*/
-Node::Node( size_t const size ) : size(size) {
+Node::Node( size_t const size ) : size(size), prev(NULL), depth(0) {
 	std::srand(std::time(0));
 	this->array = new size_t*[size];
 	for (size_t i = 0; i < size; i++) {
@@ -212,7 +212,7 @@ Node::Node( size_t const size ) : size(size) {
 	std::cout << this->toString() << '\n';
 }
 
-Node::Node( size_t const size, std::string **input ) : size(size) {
+Node::Node( size_t const size, std::string **input ) : size(size), prev(NULL), depth(0) {
 	this->array = new size_t*[size];
 	for (size_t i = 0; i < size; i++) {
 		this->array[i] = new size_t[size];
@@ -315,10 +315,6 @@ Node::Node( Node const & src ) {
 /* MEMBER OPERATORS OVERLOAD =================================================*/
 Node		&Node::operator=( Node const & rhs ) {
 	this->size = rhs.size;
-<<<<<<< HEAD
-=======
-	// std::cout << size << '\n';
->>>>>>> m
 	this->points = rhs.points;
 	this->depth = rhs.depth;
 	this->prev = rhs.prev;

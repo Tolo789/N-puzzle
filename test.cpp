@@ -10,6 +10,7 @@
 #include "error.hpp"
 #include "npuzzle.hpp"
 #include "treat_input.hpp"
+#include "astar.hpp"
 
 #include <stdio.h>//
 
@@ -190,17 +191,8 @@ int				main(int ac, char **av) {
 		startNode = new Node( retTreatinput.size, retTreatinput.ret );
 	}
 
-	// std::string **ret = treatInput("1 2 3\n8 5 4\n7 0 6");
-	// Node *startNode = new Node(retTreatinput.size, retTreatinput.ret);
-	// std::cout << "RUNNNN" << '\n';
-	// run(startNode);
-	// if ( read_file(av[ac - 1], input) < 0 )
-	// 	return (1);
-	// if (!input) {
-	// 	// generate_puzzle()
-	// } else {
-	// 	std::string **ret = treatInput("1 2 3\n4 0 6\n7 8 5");
-	// }
+	runAStar(startNode);
+	std::cout << "END" << '\n';
 	// delete [] ret[0];
 	// delete [] ret[1];
 	// delete [] ret[2];
