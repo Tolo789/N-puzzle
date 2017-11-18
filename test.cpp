@@ -191,7 +191,7 @@ int				main(int ac, char **av) {
 		startNode = new Node( retTreatinput.size, retTreatinput.ret );
 	}
 
-	runAStar(startNode);
+	runAStar(startNode, false);
 	std::cout << "END" << '\n';
 	// delete [] ret[0];
 	// delete [] ret[1];

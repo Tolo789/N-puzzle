@@ -332,6 +332,7 @@ Node		&Node::operator=( Node const & rhs ) {
 bool		Node::operator<( const Node& rhs ) {
 	size_t lTotScore = this->depth + this->score;
 	size_t rTotScore = rhs.depth + rhs.score;
+
 	if (lTotScore < rTotScore)
 		return true;
 	else if (lTotScore > rTotScore)
