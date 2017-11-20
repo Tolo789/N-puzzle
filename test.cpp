@@ -158,13 +158,9 @@ int		run(Node *startNode) {
 	else {
 		std::cout << "Solution found" << std::endl;
 	}
-
 	// Clear vectors
 	clearNodeVector(openList);
 	clearNodeVector(closedList);
-
-
-
 	return 0;
 }
 
