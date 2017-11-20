@@ -25,15 +25,15 @@ static void printNodeVector(std::vector<Node *> &myVector) {
 	}
 }
 
-static bool isNodeInVector(std::vector<Node *> &myVector, Node *targetNode) {
+static std::vector<Node *>::iterator getNodeInVector(std::vector<Node *> &myVector, Node *targetNode) {
 	std::vector<Node *>::iterator it = myVector.begin();
 	while (it != myVector.end()) {
 		if (**it == *targetNode)
-			return true;
+			return it;
 		it++;
 	}
 
-	return false;
+	return it;
 }
 
 
@@ -105,13 +105,7 @@ void		runAStar(Node *startNode) {
 	Node *tmpNode;
 	int i; // counter for swaps in 4 directions
 	Node *newNode;
-	int x = 0;
 	do {
-		// if (++x > 100) {
-		// 	clearNodeVector(openList);
-		// 	clearNodeVector(closedList);
-		// 	while (true) ;
-		// }
 		// TODO: choose node based on heuristic, take first if already sorted
 		// std::cout << "\n --- Heuristic search ----------------------------------" << std::endl;
 		// std::cout << "Open" << std::endl;
@@ -140,12 +134,20 @@ void		runAStar(Node *startNode) {
 				(i == 3 && tmpNode->points[0].x_current != tmpNode->size - 1)) {		// right
 
 				newNode = swapNode(tmpNode, i);
-				if (!isNodeInVector(closedList, newNode)) {
-					if (!isNodeInVector(openList, newNode)) {
+				it = getNodeInVector(closedList, newNode);
+				if (it == closedList.end()) {
+					it = getNodeInVector(openList, newNode);
+					if (it == openList.end()) {
 						openList.push_back(newNode);
 					}
 					else {
-						// TODO: if in openList then check if depth is less, if so update prev node
+						// If already in openList then check if depth is less, if so update prev node
+						// This is only useful with greedy searches, classic A* already choose based on shortest path
+						if (newNode->depth < (*it)->depth) {
+							(*it)->depth = newNode->depth;
+							(*it)->prev = newNode->prev;
+						}
+
 						delete newNode;
 					}
 				} else {
