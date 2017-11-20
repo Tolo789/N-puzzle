@@ -9,6 +9,10 @@
 class Node {
 
 private:
+	Node( void );
+
+	size_t **getFinalMap(size_t size);
+	static int	getFinalPosition( size_t const value, size_t **map, size_t const size, size_t *finalCoords );
 
 protected:
 
@@ -29,7 +33,6 @@ public:
 	bool	operator<( const Node& rhs );
 	bool	operator==( const Node& rhs );
 
-	static int	getFinalPosition( size_t const value, size_t **map, size_t const size, size_t *finalCoords );
 	void			updateScore(void);
 	std::string		toString(void);
 };

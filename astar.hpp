@@ -1,7 +1,7 @@
-#ifndef ASTAR_HPP
-# define ASTAR_HPP
+#ifndef ASTAR2_HPP
+# define ASTAR2_HPP
 # include "Node.class.hpp"
 
-void runAStar(Node *startNode, bool fast);
+void runAStar(Node *startNode);
 
 #endif

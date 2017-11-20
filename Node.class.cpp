@@ -10,6 +10,15 @@
 
 
 /* CONSTRUCTORS ==============================================================*/
+
+Node::Node( void ) {
+	this->size = 0;
+	// this->points = ;   // no need to initialise because std::map initialises itself
+	this->depth = 0;
+	this->prev = NULL;
+	this->array = NULL;
+}
+
 Node::Node( size_t const size ) : size(size), prev(NULL), depth(0) {
 	std::srand(std::time(0));
 	this->array = new size_t*[size];
@@ -18,63 +27,9 @@ Node::Node( size_t const size ) : size(size), prev(NULL), depth(0) {
 	}
 
 	/* GENERATE FINAL MAP */
-	size_t i = 1;
-	int direction = 0; // 0 = right, 1 = down, 2 = left, 3 = up
-	size_t offset = 0;
-	size_t steps = size - offset;
-	int changeOffsetCount = 1; // usually change offset after 2 direction change, but at the beginning is after the first direction change
-	size_t max = (size * size) - 1;
-	size_t	**map = new size_t* [size];
-	for (size_t i = 0; i < size; i++) {
-		map[i] = new size_t [size];
-	}
-	size_t x = 0;
-	size_t y = 0;
+	size_t **map = getFinalMap(size);
 
-	// set to zero
-	y = 0;
-	while (y < size) {
-		x = 0;
-		while (x < size) {
-			map[y][x] = 0;
-			x++;
-		}
-		y++;
-	}
-
-	y = 0;
-	x = 0;
-	while (i <= max) {
-		map[y][x] = i;
-		steps--;
-		if (steps == 0) {
-			direction = (direction + 1) % 4;
-
-			changeOffsetCount--;
-			if (changeOffsetCount == 0) {
-				changeOffsetCount = 2;
-				offset++;
-			}
-			steps = size - offset;
-		}
-		switch (direction) {
-			case 0:
-				x++;
-				break;
-			case 1:
-				y++;
-				break;
-			case 2:
-				x--;
-				break;
-			case 3:
-				y--;
-				break;
-			default:
-				break;
-		}
-		i++;
-	}
+	// Copy final map on Node and create related Points
 	size_t	index;
 	size_t	value;
 	for (int y = 0; y < size; y++) {
@@ -86,10 +41,14 @@ Node::Node( size_t const size ) : size(size), prev(NULL), depth(0) {
 			this->points.insert(std::pair<size_t, Point>(value, newPoint));
 		}
 	}
+
+	// Delete final map
 	for (size_t i = 0; i < size; i++) {
 		delete [] map[i];
 	}
 	delete [] map;
+
+	// Shuffle the puzzle
 	size_t	lastMove = 0;
 	Point	zero = this->points[0];
 	int		neighbours;
@@ -219,70 +178,8 @@ Node::Node( size_t const size, std::string **input ) : size(size), prev(NULL), d
 	}
 
 	/* GENERATE FINAL MAP */
-	size_t i = 1;
-	int direction = 0; // 0 = right, 1 = down, 2 = left, 3 = up
-	size_t offset = 0;
-	size_t steps = size - offset;
-	int changeOffsetCount = 1; // usually change offset after 2 direction change, but at the beginning is after the first direction change
-	size_t max = (size * size) - 1;
-	size_t	**map = new size_t* [size];
-	for (size_t i = 0; i < size; i++) {
-		map[i] = new size_t [size];
-	}
-	size_t x = 0;
-	size_t y = 0;
+	size_t **map = getFinalMap(size);
 
-	// set to zero
-	y = 0;
-	while (y < size) {
-		x = 0;
-		while (x < size) {
-			map[y][x] = 0;
-			x++;
-		}
-		// std::cout << '\n';
-		y++;
-	}
-
-	y = 0;
-	x = 0;
-	while (i <= max) {
-		map[y][x] = i;
-		steps--;
-		if (steps == 0) {
-			direction = (direction + 1) % 4;
-
-			changeOffsetCount--;
-			if (changeOffsetCount == 0) {
-				changeOffsetCount = 2;
-				offset++;
-			}
-			steps = size - offset;
-		}
-
-		switch (direction) {
-			case 0:
-			x++;
-			break;
-			case 1:
-			y++;
-			break;
-			case 2:
-			x--;
-			break;
-			case 3:
-			y--;
-			break;
-			default:
-			break;
-		}
-		// if (direction == 0)
-		// else if (direction == 1)
-		// else if (direction == 2)
-		// else if (direction == 3)
-
-		i++;
-	}
 	size_t	index;
 	size_t	value;
 	size_t	*finalCoords = new size_t [2];
@@ -301,6 +198,8 @@ Node::Node( size_t const size, std::string **input ) : size(size), prev(NULL), d
 		}
 	}
 	this->updateScore();
+
+	// Delete everything
 	delete [] finalCoords;
 	for (size_t i = 0; i < size; i++) {
 		delete [] map[i];
@@ -338,10 +237,7 @@ bool		Node::operator<( const Node& rhs ) {
 	else if (lTotScore > rTotScore)
 		return false;
 	else
-		return (this->depth < rhs.depth);
-	// else if (this->depth < rhs.depth)  // if same score, then compare depth
-	// 	return true;
-	// return false;
+		return (this->depth < rhs.depth); // if same total score, then compare depth
 }
 
 bool		Node::operator==( const Node& rhs ) {
@@ -382,6 +278,71 @@ Node::~Node( void ) {
 }
 
 /* MEMBER FUNCTIONS ==========================================================*/
+
+size_t **Node::getFinalMap(size_t const size) {
+	int direction = 0; // 0 = right, 1 = down, 2 = left, 3 = up
+	size_t offset = 0;
+	size_t steps = size - offset;
+	int changeOffsetCount = 1; // usually change offset after 2 direction change, but at the beginning is after the first direction change
+	size_t max = (size * size) - 1;
+	size_t	**map = new size_t* [size];
+	for (size_t i = 0; i < size; i++) {
+		map[i] = new size_t [size];
+	}
+	size_t x = 0;
+	size_t y = 0;
+
+	// set to zero
+	y = 0;
+	while (y < size) {
+		x = 0;
+		while (x < size) {
+			map[y][x] = 0;
+			x++;
+		}
+		y++;
+	}
+
+	// Fill numbers with snake form
+	y = 0;
+	x = 0;
+	size_t i = 1;
+	while (i <= max) {
+		map[y][x] = i;
+		steps--;
+		if (steps == 0) {
+			direction = (direction + 1) % 4;
+
+			changeOffsetCount--;
+			if (changeOffsetCount == 0) {
+				changeOffsetCount = 2;
+				offset++;
+			}
+			steps = size - offset;
+		}
+
+		switch (direction) {
+			case 0:
+				x++;
+				break;
+			case 1:
+				y++;
+				break;
+			case 2:
+				x--;
+				break;
+			case 3:
+				y--;
+				break;
+			default:
+				break;
+		}
+
+		i++;
+	}
+
+	return map;
+}
 
 int	Node::getFinalPosition(
 size_t const value,
