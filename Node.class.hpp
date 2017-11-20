@@ -11,8 +11,9 @@ class Node {
 private:
 	Node( void );
 
-	size_t **getFinalMap(size_t size);
+	size_t		**getFinalMap(size_t size);
 	static int	getFinalPosition( size_t const value, size_t **map, size_t const size, size_t *finalCoords );
+	size_t		manhattan(Point const &p);
 
 protected:
 

@@ -58,7 +58,7 @@ static int	setSize(char const *param) {
 		}
 		try {
 			Env::puzzle.size = std::stoi(param);
-			if (Env::puzzle.size > 1) {
+			if (Env::puzzle.size > 1 && Env::puzzle.size <= 100) {
 				Env::options |= SIZE;
 				return (0);
 			} else {
@@ -92,6 +92,27 @@ static int	setIterations(char const *param) {
 	}
 }
 
+static int	setSpeed(char const *param) {
+	if (!param) {
+		return (ft_error(INVALID_OPTION_VALUE, 1));
+	} else {
+		if (all_digit(std::string(param))) {
+			return (ft_error(INVALID_OPTION_VALUE, 1));
+		}
+		try {
+			Env::printSpeed = std::stoi(param);
+			if (Env::printSpeed > 0 && Env::printSpeed <= 5000) {
+				Env::options |= SLOW_PRINT;
+				return (0);
+			} else {
+				return (ft_error(INVALID_OPTION_VALUE, 1));
+			}
+		} catch (...) {
+			return (ft_error(INVALID_OPTION_VALUE, 1));
+		}
+	}
+}
+
 static int	switch_set_options(char const *arg, char const *param) {
 	if (!arg)
 		return (0);
@@ -110,6 +131,8 @@ static int	switch_set_options(char const *arg, char const *param) {
 			} else if (*arg == HELP_CHAR  && !*(arg + 1)) {
 				Env::options |= HELP;
 				return (0);
+			} else if (*arg == SLOW_PRINT_CHAR  && !*(arg + 1)) {
+				return (setSpeed(param));
 			} else {
 				return (ft_error(UNKNOWN_OPTION, 1));
 			}

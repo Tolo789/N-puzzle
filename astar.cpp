@@ -2,10 +2,14 @@
 #include <iostream>
 #include <sstream>
 #include <algorithm>
+#include <list>
+#include <chrono>
+#include <thread>
+#include "Env.class.hpp"
 #include "astar.hpp"
 
 static void	clearNodeVector(std::vector<Node *> &myVector) {
-	std::cout << "Vector size before clearing: " << myVector.size() << std::endl;
+	// std::cout << "Vector size before clearing: " << myVector.size() << std::endl;
 
 	std::vector<Node *>::iterator it;
 	while (myVector.size() > 0) {
@@ -14,16 +18,16 @@ static void	clearNodeVector(std::vector<Node *> &myVector) {
 		myVector.erase(it);
 	}
 
-	std::cout << "Vector size after clearing: " << myVector.size() << std::endl << std::endl;
+	// std::cout << "Vector size after clearing: " << myVector.size() << std::endl << std::endl;
 }
 
-static void printNodeVector(std::vector<Node *> &myVector) {
-	std::vector<Node *>::iterator it = myVector.begin();
-	while (it != myVector.end()) {
-		std::cout << (*it)->toString() << std::endl;
-		it++;
-	}
-}
+// static void printNodeVector(std::vector<Node *> &myVector) {
+// 	std::vector<Node *>::iterator it = myVector.begin();
+// 	while (it != myVector.end()) {
+// 		std::cout << (*it)->toString() << std::endl;
+// 		it++;
+// 	}
+// }
 
 static std::vector<Node *>::iterator getNodeInVector(std::vector<Node *> &myVector, Node *targetNode) {
 	std::vector<Node *>::iterator it = myVector.begin();
@@ -106,18 +110,11 @@ void		runAStar(Node *startNode) {
 	int i; // counter for swaps in 4 directions
 	Node *newNode;
 	do {
-		// TODO: choose node based on heuristic, take first if already sorted
-		// std::cout << "\n --- Heuristic search ----------------------------------" << std::endl;
-		// std::cout << "Open" << std::endl;
-		// printNodeVector(openList);
-		// std::cout << "Closed" << std::endl;
-		// printNodeVector(closedList);
-
 		it = getBestNode(openList);
 		tmpNode = *it;
 
 		// Remove node from openList and put in closedList
-		closedList.push_back(tmpNode);
+		closedList.insert(closedList.begin(), tmpNode);
 		openList.erase(it);
 
 		// check if node is goal, if so exit loop
@@ -138,7 +135,12 @@ void		runAStar(Node *startNode) {
 				if (it == closedList.end()) {
 					it = getNodeInVector(openList, newNode);
 					if (it == openList.end()) {
-						openList.push_back(newNode);
+						openList.insert(openList.begin(), newNode);
+						Env::totalNumberOfStates++;
+						size_t const s = openList.size();
+						if (s > Env::maxNumberOfState) {
+							Env::maxNumberOfState = s;
+						}
 					}
 					else {
 						// If already in openList then check if depth is less, if so update prev node
@@ -167,10 +169,22 @@ void		runAStar(Node *startNode) {
 	else {
 		std::cout << "Solution found!" << std::endl;
 		// TODO: print it from first to last
+		std::list<Node*>	finalList;
 		do {
-			std::cout << tmpNode->toString() << std::endl;
+			// std::cout << tmpNode->toString() << std::endl;
+			finalList.push_front(tmpNode);
 			tmpNode = tmpNode->prev;
 		} while (tmpNode);
+		Env::numberOfMove = finalList.size() - 1;
+		for (std::list<Node*>::iterator i = finalList.begin(); i != finalList.end(); i++) {
+			if (Env::options & SLOW_PRINT) {
+				std::system("clear");
+			}
+			std::cout << (*i)->toString() << std::endl;
+			if (Env::options & SLOW_PRINT) {
+				std::this_thread::sleep_for(std::chrono::milliseconds(Env::printSpeed));
+			}
+		}
 	}
 
 	// Clear vectors

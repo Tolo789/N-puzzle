@@ -5,7 +5,7 @@
 
 #include "error.hpp"
 #include "tools.hpp"
-#include "npuzzle.hpp"
+#include "treat_input.hpp"
 
 int		treatInput(t_treatInput *retTreatinput, std::string input) {
 	std::vector<std::string>	splitLine;
@@ -28,7 +28,6 @@ int		treatInput(t_treatInput *retTreatinput, std::string input) {
 	while (getline(f, line, '\n')) {
 		splitLine.push_back(line);
 	}
-	std::cout << retTreatinput->size << std::endl;
 	size_t	splitLineSize = splitLine.size();
 	ret = new std::string* [splitLineSize];
 	for (size_t i = 0; i < splitLineSize; i++) {

@@ -19,7 +19,7 @@ Node::Node( void ) {
 	this->array = NULL;
 }
 
-Node::Node( size_t const size ) : size(size), prev(NULL), depth(0) {
+Node::Node( size_t const size ) : size(size), depth(0), prev(NULL) {
 	std::srand(std::time(0));
 	this->array = new size_t*[size];
 	for (size_t i = 0; i < size; i++) {
@@ -30,11 +30,9 @@ Node::Node( size_t const size ) : size(size), prev(NULL), depth(0) {
 	size_t **map = getFinalMap(size);
 
 	// Copy final map on Node and create related Points
-	size_t	index;
 	size_t	value;
-	for (int y = 0; y < size; y++) {
-		for (int x = 0; x < size; x++) {
-			size_t pos = 0;
+	for (size_t y = 0; y < size; y++) {
+		for (size_t x = 0; x < size; x++) {
 			value = map[y][x];
 			Point newPoint = Point(value, x, y, x, y);
 			this->array[y][x] = value;
@@ -102,14 +100,8 @@ Node::Node( size_t const size ) : size(size), prev(NULL), depth(0) {
 			bottom = zero;
 		}
 
-		// std::cout << "top:" << top.value << '\n';
-		// std::cout << "left:" << left.value << '\n';
-		// std::cout << "bottom:" << bottom.value << '\n';
-		// std::cout << "right:" << right.value << '\n';
 		rand = std::rand() % neighbours;
-		// std::cout << "neighbours:"<<neighbours << '\n';
 		if (rand == 0 && zero.value != left.value) {
-			// std::cout << neighbours << " "<< rand << '\n';
 			Point::swapPoint( this->points[0], this->points[left.value] );
 			rand--;
 			tmpValue = this->array[zero.y_current][zero.x_current];
@@ -120,7 +112,6 @@ Node::Node( size_t const size ) : size(size), prev(NULL), depth(0) {
 			rand--;
 		}
 		if (rand == 0 && zero.value != bottom.value) {
-			// std::cout << neighbours << " "<< rand << '\n';
 			Point::swapPoint( this->points[0], this->points[bottom.value] );
 			rand--;
 			tmpValue = this->array[zero.y_current][zero.x_current];
@@ -131,7 +122,6 @@ Node::Node( size_t const size ) : size(size), prev(NULL), depth(0) {
 			rand--;
 		}
 		if (rand == 0 && zero.value != top.value) {
-			// std::cout << neighbours << " "<< rand << '\n';
 			Point::swapPoint( this->points[0], this->points[top.value] );
 			rand--;
 			tmpValue = this->array[zero.y_current][zero.x_current];
@@ -152,26 +142,11 @@ Node::Node( size_t const size ) : size(size), prev(NULL), depth(0) {
 			rand--;
 		}
 		zero = this->points[0];
-		// std::cout << this->toString() << '\n';
 	}
 	Node::updateScore();
-	// std::cout << top.toString() << '\n';
-	// std::cout << left.toString() << '\n';
-	// std::cout << bottom.toString() << '\n';
-	// std::cout << right.toString() << '\n';
-	// }
-	// for (size_t y = 0; y < this->size * this->size; y++) {
-	// 	std::cout << (this->points[y]).toString() << '\n';
-	// }
-	// std::cout << "--------------------------" << '\n';
-	// Point::swapPoint( this->points[5], this->points[1] );
-	// for (size_t y = 0; y < this->size * this->size; y++) {
-		// std::cout << (this->points[y]).toString() << '\n';
-	// }
-	std::cout << this->toString() << '\n';
 }
 
-Node::Node( size_t const size, std::string **input ) : size(size), prev(NULL), depth(0) {
+Node::Node( size_t const size, std::string **input ) : size(size), depth(0), prev(NULL) {
 	this->array = new size_t*[size];
 	for (size_t i = 0; i < size; i++) {
 		this->array[i] = new size_t[size];
@@ -180,11 +155,10 @@ Node::Node( size_t const size, std::string **input ) : size(size), prev(NULL), d
 	/* GENERATE FINAL MAP */
 	size_t **map = getFinalMap(size);
 
-	size_t	index;
 	size_t	value;
 	size_t	*finalCoords = new size_t [2];
-	for (int y = 0; y < size; y++) {
-		for (int x = 0; x < size; x++) {
+	for (size_t y = 0; y < size; y++) {
+		for (size_t x = 0; x < size; x++) {
 			size_t pos = 0;
 			value = static_cast<size_t>(std::stoi(input[y][x], &pos , 10));
 			if (Node::getFinalPosition( value, map, size, finalCoords ) < 0) {
@@ -366,20 +340,40 @@ void			Node::updateScore(void) {
 	std::map<size_t, Point>::iterator it;
 	this->score = 0;
 	for (it = this->points.begin(); it != this->points.end(); it++) {
-		if (it->second.value > 0) {
-			if (it->second.x_current >= it->second.x_final)
-				this->score += it->second.x_current - it->second.x_final;
-			else
-				this->score += it->second.x_final - it->second.x_current;
-
-			if (it->second.y_current >= it->second.y_final)
-				this->score += it->second.y_current - it->second.y_final;
-			else
-				this->score += it->second.y_final - it->second.y_current;
+		if ((Env::options & HEUR_MASK) == HEUR_MAN) {
+			this->score += this->manhattan(it->second);
 		}
+		// if (it->second.value > 0) {
+		// 	if (it->second.x_current >= it->second.x_final)
+		// 		this->score += it->second.x_current - it->second.x_final;
+		// 	else
+		// 		this->score += it->second.x_final - it->second.x_current;
+		//
+		// 	if (it->second.y_current >= it->second.y_final)
+		// 		this->score += it->second.y_current - it->second.y_final;
+		// 	else
+		// 		this->score += it->second.y_final - it->second.y_current;
+		// }
 	}
 
 	return ;
+}
+
+size_t			Node::manhattan(Point const &p) {
+	size_t	ret = 0;
+
+	if (p.value > 0) {
+		if (p.x_current >= p.x_final)
+			ret += p.x_current - p.x_final;
+		else
+			ret += p.x_final - p.x_current;
+
+		if (p.y_current >= p.y_final)
+			ret += p.y_current - p.y_final;
+		else
+			ret += p.y_final - p.y_current;
+	}
+	return (ret);
 }
 
 std::string		Node::toString(void) {
@@ -400,7 +394,11 @@ std::string		Node::toString(void) {
 		while (j < this->size) {
 			if (j > 0)
 				s << " ";
-			s << this->array[i][j];
+			if (this->array[i][j] == 0) {
+				s << "\033[91m" << this->array[i][j] << "\033[39m";
+			} else {
+				s << this->array[i][j];
+			}
 			j++;
 		}
 		s << std::endl;

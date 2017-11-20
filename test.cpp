@@ -8,12 +8,9 @@
 #include "Env.class.hpp"
 #include "options_handling.hpp"
 #include "error.hpp"
-#include "npuzzle.hpp"
 #include "treat_input.hpp"
 #include "astar.hpp"
 #include "astar.hpp"
-
-#include <stdio.h>//
 
 static int	read_file(char const *filename, std::string *input) {
 	std::fstream		file;
@@ -40,6 +37,7 @@ static int	read_file(char const *filename, std::string *input) {
 static int		usage(char const *bin) {
 	std::cout << "Usage: " << bin << " [options] [input_file]" << std::endl << std::endl;
 	std::cout << "Options:" << std::endl;
+	std::cout << "  -" << SLOW_PRINT_CHAR << " <speed> (min: 1, max: 5000, default: 500ms) : display slowly the solution." << std::endl;
 	std::cout << "  -" << HELP_CHAR << ": display help menu and exits." << std::endl;
 	std::cout << "  -" << HEUR_CHAR << " <heuristic>: (default: man)" << std::endl;
 	std::cout << "    heuristics:" << std::endl;
@@ -47,7 +45,7 @@ static int		usage(char const *bin) {
 	std::cout << "      '" << HEUR_2_STR << "' : ..." << std::endl;
 	std::cout << "      '" << HEUR_3_STR << "' : ..." << std::endl;
 	std::cout << "  /* If you don't provide any input file */" << std::endl;
-	std::cout << "  -" << SIZE_CHAR << " <size> (min:2, default: 3): set a size for a random generated puzzle" << std::endl;
+	std::cout << "  -" << SIZE_CHAR << " <size> (min: 2, max: 100, default: 3): set a size for a random generated puzzle" << std::endl;
 	std::cout << "  -" << ITERATIONS_CHAR << " <iterations> (default: 10000): set a number of iterations for a random generated puzzle" << std::endl;
 	return (1);
 }
@@ -57,7 +55,6 @@ int				main(int ac, char **av) {
 	t_treatInput	retTreatinput;
 	Node			*startNode;
 
-	t_puzzle p = {0, 0};
 	if ( get_options(&ac, av) ) {
 		return (1);
 	} else if ( Env::options & HELP ) {
@@ -74,9 +71,11 @@ int				main(int ac, char **av) {
 		treatInput(&retTreatinput, input);
 		startNode = new Node( retTreatinput.size, retTreatinput.ret );
 	}
-
 	runAStar(startNode);
-	std::cout << "END" << '\n';
+	std::cout << "Total number of states: " << Env::totalNumberOfStates << std::endl;
+	std::cout << "Max number of states: " << Env::maxNumberOfState << std::endl;
+	std::cout << "Number of move: " << Env::numberOfMove << std::endl;
+	// std::cout << "END" << '\n';
 	// delete [] ret[0];
 	// delete [] ret[1];
 	// delete [] ret[2];
