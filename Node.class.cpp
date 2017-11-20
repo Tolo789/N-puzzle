@@ -7,32 +7,24 @@
 
 
 /* STATIC VARIABLES ==========================================================*/
-
+size_t Node::size = 0;
 
 /* CONSTRUCTORS ==============================================================*/
 
-Node::Node( void ) {
-	this->size = 0;
-	// this->points = ;   // no need to initialise because std::map initialises itself
-	this->depth = 0;
-	this->prev = NULL;
-	this->array = NULL;
-}
-
-Node::Node( size_t const size ) : size(size), depth(0), prev(NULL) {
+Node::Node( void ) : depth(0), prev(NULL) {
 	std::srand(std::time(0));
-	this->array = new size_t*[size];
-	for (size_t i = 0; i < size; i++) {
-		this->array[i] = new size_t[size];
+	this->array = new size_t*[Node::size];
+	for (size_t i = 0; i < Node::size; i++) {
+		this->array[i] = new size_t[Node::size];
 	}
 
 	/* GENERATE FINAL MAP */
-	size_t **map = getFinalMap(size);
+	size_t **map = getFinalMap();
 
 	// Copy final map on Node and create related Points
 	size_t	value;
-	for (size_t y = 0; y < size; y++) {
-		for (size_t x = 0; x < size; x++) {
+	for (size_t y = 0; y < Node::size; y++) {
+		for (size_t x = 0; x < Node::size; x++) {
 			value = map[y][x];
 			Point newPoint = Point(value, x, y, x, y);
 			this->array[y][x] = value;
@@ -41,7 +33,7 @@ Node::Node( size_t const size ) : size(size), depth(0), prev(NULL) {
 	}
 
 	// Delete final map
-	for (size_t i = 0; i < size; i++) {
+	for (size_t i = 0; i < Node::size; i++) {
 		delete [] map[i];
 	}
 	delete [] map;
@@ -79,7 +71,7 @@ Node::Node( size_t const size ) : size(size), depth(0), prev(NULL) {
 		} else {
 			top = zero;
 		}
-		if (zero.x_current < this->size - 1) {
+		if (zero.x_current < Node::size - 1) {
 			right = this->points[this->array[zero.y_current][zero.x_current + 1]];
 			if (right.value != lastMove) {
 				neighbours++;
@@ -89,7 +81,7 @@ Node::Node( size_t const size ) : size(size), depth(0), prev(NULL) {
 		} else {
 			right = zero;
 		}
-		if (zero.y_current < this->size - 1) {
+		if (zero.y_current < Node::size - 1) {
 			bottom = this->points[this->array[zero.y_current + 1][zero.x_current]];
 			if (bottom.value != lastMove) {
 				neighbours++;
@@ -146,22 +138,22 @@ Node::Node( size_t const size ) : size(size), depth(0), prev(NULL) {
 	Node::updateScore();
 }
 
-Node::Node( size_t const size, std::string **input ) : size(size), depth(0), prev(NULL) {
-	this->array = new size_t*[size];
-	for (size_t i = 0; i < size; i++) {
-		this->array[i] = new size_t[size];
+Node::Node( std::string **input ) : depth(0), prev(NULL) {
+	this->array = new size_t*[Node::size];
+	for (size_t i = 0; i < Node::size; i++) {
+		this->array[i] = new size_t[Node::size];
 	}
 
 	/* GENERATE FINAL MAP */
-	size_t **map = getFinalMap(size);
+	size_t **map = getFinalMap();
 
 	size_t	value;
 	size_t	*finalCoords = new size_t [2];
-	for (size_t y = 0; y < size; y++) {
-		for (size_t x = 0; x < size; x++) {
+	for (size_t y = 0; y < Node::size; y++) {
+		for (size_t x = 0; x < Node::size; x++) {
 			size_t pos = 0;
 			value = static_cast<size_t>(std::stoi(input[y][x], &pos , 10));
-			if (Node::getFinalPosition( value, map, size, finalCoords ) < 0) {
+			if (Node::getFinalPosition( value, map, finalCoords ) < 0) {
 				/* ERROR HANDLING */
 				std::cout << "ERROR" << std::endl;
 			} else {
@@ -175,7 +167,7 @@ Node::Node( size_t const size, std::string **input ) : size(size), depth(0), pre
 
 	// Delete everything
 	delete [] finalCoords;
-	for (size_t i = 0; i < size; i++) {
+	for (size_t i = 0; i < Node::size; i++) {
 		delete [] map[i];
 	}
 	delete [] map;
@@ -187,15 +179,14 @@ Node::Node( Node const & src ) {
 
 /* MEMBER OPERATORS OVERLOAD =================================================*/
 Node		&Node::operator=( Node const & rhs ) {
-	this->size = rhs.size;
 	this->points = rhs.points;
 	this->depth = rhs.depth;
 	this->prev = rhs.prev;
 
-	this->array = new size_t*[this->size];
-	for (size_t i = 0; i < this->size; i++) {
-		this->array[i] = new size_t[this->size];
-		for (size_t j = 0; j < size; j++) {
+	this->array = new size_t*[Node::size];
+	for (size_t i = 0; i < Node::size; i++) {
+		this->array[i] = new size_t[Node::size];
+		for (size_t j = 0; j < Node::size; j++) {
 			this->array[i][j] = rhs.array[i][j];
 		}
 	}
@@ -244,7 +235,7 @@ bool		Node::operator==( const Node& rhs ) {
 
 /* DESTRUCTOR ================================================================*/
 Node::~Node( void ) {
-	for (size_t i = 0; i < this->size; i++) {
+	for (size_t i = 0; i < Node::size; i++) {
 		delete this->array[i];
 	}
 	delete this->array;
@@ -253,24 +244,24 @@ Node::~Node( void ) {
 
 /* MEMBER FUNCTIONS ==========================================================*/
 
-size_t **Node::getFinalMap(size_t const size) {
+size_t **Node::getFinalMap() {
 	int direction = 0; // 0 = right, 1 = down, 2 = left, 3 = up
 	size_t offset = 0;
-	size_t steps = size - offset;
+	size_t steps = Node::size - offset;
 	int changeOffsetCount = 1; // usually change offset after 2 direction change, but at the beginning is after the first direction change
-	size_t max = (size * size) - 1;
-	size_t	**map = new size_t* [size];
-	for (size_t i = 0; i < size; i++) {
-		map[i] = new size_t [size];
+	size_t max = (Node::size * Node::size) - 1;
+	size_t	**map = new size_t* [Node::size];
+	for (size_t i = 0; i < Node::size; i++) {
+		map[i] = new size_t [Node::size];
 	}
 	size_t x = 0;
 	size_t y = 0;
 
 	// set to zero
 	y = 0;
-	while (y < size) {
+	while (y < Node::size) {
 		x = 0;
-		while (x < size) {
+		while (x < Node::size) {
 			map[y][x] = 0;
 			x++;
 		}
@@ -292,7 +283,7 @@ size_t **Node::getFinalMap(size_t const size) {
 				changeOffsetCount = 2;
 				offset++;
 			}
-			steps = size - offset;
+			steps = Node::size - offset;
 		}
 
 		switch (direction) {
@@ -321,10 +312,9 @@ size_t **Node::getFinalMap(size_t const size) {
 int	Node::getFinalPosition(
 size_t const value,
 size_t **map,
-size_t const size,
 size_t *finalCoords ) {
-	for (size_t i = 0; i < size; i++) {
-		for (size_t j = 0; j < size; j++) {
+	for (size_t i = 0; i < Node::size; i++) {
+		for (size_t j = 0; j < Node::size; j++) {
 			if (value == map[i][j]) {
 				finalCoords[0] = j;
 				finalCoords[1] = i;
@@ -343,17 +333,6 @@ void			Node::updateScore(void) {
 		if ((Env::options & HEUR_MASK) == HEUR_MAN) {
 			this->score += this->manhattan(it->second);
 		}
-		// if (it->second.value > 0) {
-		// 	if (it->second.x_current >= it->second.x_final)
-		// 		this->score += it->second.x_current - it->second.x_final;
-		// 	else
-		// 		this->score += it->second.x_final - it->second.x_current;
-		//
-		// 	if (it->second.y_current >= it->second.y_final)
-		// 		this->score += it->second.y_current - it->second.y_final;
-		// 	else
-		// 		this->score += it->second.y_final - it->second.y_current;
-		// }
 	}
 
 	return ;
@@ -388,10 +367,10 @@ std::string		Node::toString(void) {
 	// s << "Graphical:" << std::endl;
 	size_t i = 0;
 	size_t j;
-	while (i < this->size) {
+	while (i < Node::size) {
 		j = 0;
 		s << "\t";
-		while (j < this->size) {
+		while (j < Node::size) {
 			if (j > 0)
 				s << " ";
 			if (this->array[i][j] == 0) {

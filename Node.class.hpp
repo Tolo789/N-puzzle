@@ -9,24 +9,23 @@
 class Node {
 
 private:
-	Node( void );
 
-	size_t		**getFinalMap(size_t size);
-	static int	getFinalPosition( size_t const value, size_t **map, size_t const size, size_t *finalCoords );
+	size_t		**getFinalMap( void );
+	static int	getFinalPosition( size_t const value, size_t **map, size_t *finalCoords );
 	size_t		manhattan(Point const &p);
 
 protected:
 
 public:
-	size_t					size; // TODO: make it static
+	static size_t			size;
 	size_t					depth;
 	size_t					score;
 	std::map<size_t, Point>	points;
 	size_t					**array;
 	Node					*prev;
 
-	Node( size_t const size );
-	Node( size_t const size, std::string **input );
+	Node( void );
+	Node( std::string **input );
 	Node( Node const & src );
 	~Node( void );
 

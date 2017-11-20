@@ -10,7 +10,6 @@
 #include "error.hpp"
 #include "treat_input.hpp"
 #include "astar.hpp"
-#include "astar.hpp"
 
 static int	read_file(char const *filename, std::string *input) {
 	std::fstream		file;
@@ -66,19 +65,14 @@ int				main(int ac, char **av) {
 	} else if ( ac == 2 && read_file(av[ac - 1], &input) < 0 ) {
 		return (ft_error("invalid input file", 1));
 	} else if ( !input.length() ) {
-		startNode = new Node( Env::puzzle.size );
+		startNode = new Node();
 	} else {
 		treatInput(&retTreatinput, input);
-		startNode = new Node( retTreatinput.size, retTreatinput.ret );
+		startNode = new Node(retTreatinput.ret);
 	}
 	runAStar(startNode);
 	std::cout << "Total number of states: " << Env::totalNumberOfStates << std::endl;
 	std::cout << "Max number of states: " << Env::maxNumberOfState << std::endl;
 	std::cout << "Number of move: " << Env::numberOfMove << std::endl;
-	// std::cout << "END" << '\n';
-	// delete [] ret[0];
-	// delete [] ret[1];
-	// delete [] ret[2];
-	// delete [] ret;
 	return 0;
 }

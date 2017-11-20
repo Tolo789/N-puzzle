@@ -160,21 +160,18 @@ void		runAStar(Node *startNode) {
 		}
 
 	} while (openList.size() > 0);
-	std::cout << " ------------------------------------------------------------" << std::endl;
-
 	// Reconstruct path to solution
 	if (tmpNode->score != 0) {
 		std::cout << "Solution not found" << std::endl;
 	}
 	else {
 		std::cout << "Solution found!" << std::endl;
-		// TODO: print it from first to last
 		std::list<Node*>	finalList;
 		do {
-			// std::cout << tmpNode->toString() << std::endl;
 			finalList.push_front(tmpNode);
 			tmpNode = tmpNode->prev;
 		} while (tmpNode);
+
 		Env::numberOfMove = finalList.size() - 1;
 		for (std::list<Node*>::iterator i = finalList.begin(); i != finalList.end(); i++) {
 			if (Env::options & SLOW_PRINT) {

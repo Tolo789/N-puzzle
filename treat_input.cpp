@@ -6,6 +6,7 @@
 #include "error.hpp"
 #include "tools.hpp"
 #include "treat_input.hpp"
+#include "Node.class.hpp"
 
 int		treatInput(t_treatInput *retTreatinput, std::string input) {
 	std::vector<std::string>	splitLine;
@@ -22,6 +23,7 @@ int		treatInput(t_treatInput *retTreatinput, std::string input) {
 	}
 	try {
 		retTreatinput->size = std::stoi(line);
+		Node::size = retTreatinput->size;
 	} catch (...) {
 		return (ft_error(INVALID_SIZE, 1));
 	}

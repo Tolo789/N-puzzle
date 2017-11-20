@@ -3,6 +3,7 @@
 #include <iostream>
 
 #include "Env.class.hpp"
+#include "Node.class.hpp"
 #include "error.hpp"
 #include "tools.hpp"
 
@@ -60,6 +61,7 @@ static int	setSize(char const *param) {
 			Env::puzzle.size = std::stoi(param);
 			if (Env::puzzle.size > 1 && Env::puzzle.size <= 100) {
 				Env::options |= SIZE;
+				Node::size = Env::puzzle.size;
 				return (0);
 			} else {
 				return (ft_error(INVALID_OPTION_VALUE, 1));
