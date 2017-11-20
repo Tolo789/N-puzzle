@@ -141,6 +141,8 @@ void		runAStar2(Node *startNode, bool fast) {
 					// else {
 					// 	// TODO: if in openList then check if depth is less, if so update prev node
 					// }
+				} else {
+					delete newNode;
 				}
 			}
 			i++;

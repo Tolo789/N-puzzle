@@ -11,6 +11,7 @@
 #include "npuzzle.hpp"
 #include "treat_input.hpp"
 #include "astar.hpp"
+#include "astar2.hpp"
 
 #include <stdio.h>//
 
@@ -187,7 +188,7 @@ int				main(int ac, char **av) {
 		startNode = new Node( retTreatinput.size, retTreatinput.ret );
 	}
 
-	runAStar(startNode, false);
+	runAStar2(startNode, true);
 	std::cout << "END" << '\n';
 	// delete [] ret[0];
 	// delete [] ret[1];
