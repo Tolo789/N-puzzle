@@ -2,9 +2,11 @@
 #include <sstream>
 #include <string>
 
+#include <iomanip>
+#include <math.h>
+
 #include "Node.class.hpp"
 #include "Env.class.hpp"
-
 
 /* STATIC VARIABLES ==========================================================*/
 size_t Node::size = 0;
@@ -368,7 +370,8 @@ size_t			Node::manhattanWithLinearConflict(Point const &p) {
 		else if (p.x_current < p.x_final)
 			ret += p.x_final - p.x_current;
 		else {
-			ret += this->linearHorConflict(p);
+			ret += this->linearVertConflict(p);
+			// ret += linearConflict(p, false);
 		}
 
 		if (p.y_current > p.y_final)
@@ -376,38 +379,40 @@ size_t			Node::manhattanWithLinearConflict(Point const &p) {
 		else if (p.y_current < p.y_final)
 			ret += p.y_final - p.y_current;
 		else {
-			ret += this->linearVertConflict(p);
+			ret += this->linearHorConflict(p);
+			// ret += linearConflict(p, true);
 		}
 	}
 	return (ret);
 }
 
-// size_t		Node::linearConflict(Point const &p, bool horizontalSearch) {
-// 	size_t conflicts = 0;
-// 	size_t x = (horizontalSearch) ? 0 : p.x_current;
-// 	size_t y = (horizontalSearch) ? p.y_current : 0;
-// 	while (x < Node::size && y < Node::size) {
-// 		Point &tmpPoint = this->points[this->array[y][x]];
-// 		if (tmpPoint.value != 0 && tmpPoint.value != p.value) {
-// 			if (horizontalSearch && tmpPoint.y_current == tmpPoint.y_final) {
-// 				if (tmpPoint.x_final > p.x_final && tmpPoint.x_current < p.x_current)
-// 					conflicts++;
-// 				else if (tmpPoint.x_final < p.x_final && tmpPoint.x_current > p.x_current)
-// 					conflicts++;
-// 			}
-// 			else if (!horizontalSearch && tmpPoint.x_final == tmpPoint.x_final) {
-// 				if (tmpPoint.y_final > p.y_final && tmpPoint.y_current < p.y_current)
-// 					conflicts++;
-// 				else if (tmpPoint.y_final < p.y_final && tmpPoint.y_current > p.y_current)
-// 					conflicts++;
-// 			}
-// 		}
-//
-// 		(horizontalSearch) ? x++ : y++;
-// 	}
-//
-// 	return 2 * conflicts; // every conflict increases h() by 2
-// }
+size_t		Node::linearConflict(Point const &p, bool horizontalSearch) {
+	size_t conflicts = 0;
+	size_t x = (horizontalSearch) ? 0 : p.x_current;
+	size_t y = (horizontalSearch) ? p.y_current : 0;
+	(horizontalSearch) ? x++ : y++;
+	while (x < Node::size && y < Node::size) {
+		Point &tmpPoint = this->points[this->array[y][x]];
+		if (tmpPoint.value != 0 && tmpPoint.value != p.value) {
+			if (horizontalSearch && tmpPoint.y_current == tmpPoint.y_final) {
+				if (tmpPoint.x_final > p.x_final && tmpPoint.x_current < p.x_current)
+					conflicts++;
+				else if (tmpPoint.x_final < p.x_final && tmpPoint.x_current > p.x_current)
+					conflicts++;
+			}
+			else if (!horizontalSearch && tmpPoint.x_current == tmpPoint.x_final) {
+				if (tmpPoint.y_final > p.y_final && tmpPoint.y_current < p.y_current)
+					conflicts++;
+				else if (tmpPoint.y_final < p.y_final && tmpPoint.y_current > p.y_current)
+					conflicts++;
+			}
+		}
+
+		(horizontalSearch) ? x++ : y++;
+	}
+
+	return 2 * conflicts; // every conflict increases h() by 2
+}
 
 size_t		Node::linearHorConflict(Point const &p) {
 	size_t conflicts = 0;
@@ -425,7 +430,7 @@ size_t		Node::linearHorConflict(Point const &p) {
 		}
 	}
 
-	return 2 * conflicts; // every conflict increases h() by 2
+	return 8 * conflicts; // every conflict increases h() by at least 2, but actually is even more
 }
 
 size_t		Node::linearVertConflict(Point const &p) {
@@ -435,14 +440,16 @@ size_t		Node::linearVertConflict(Point const &p) {
 	while (++y < Node::size) {
 		Point &tmpPoint = this->points[this->array[y][x]];
 		if (tmpPoint.value != 0) {
-			if (tmpPoint.y_final > p.y_final && tmpPoint.y_current < p.y_current)
-				conflicts++;
-			else if (tmpPoint.y_final < p.y_final && tmpPoint.y_current > p.y_current)
-				conflicts++;
+			if (tmpPoint.x_current == tmpPoint.x_final) {
+				if (tmpPoint.y_final > p.y_final && tmpPoint.y_current < p.y_current)
+					conflicts++;
+				else if (tmpPoint.y_final < p.y_final && tmpPoint.y_current > p.y_current)
+					conflicts++;
+			}
 		}
 	}
 
-	return 2 * conflicts; // every conflict increases h() by 2
+	return 8 * conflicts; // every conflict increases h() by at least 2, but actually is even more
 }
 
 std::string		Node::toString(void) {
@@ -457,17 +464,27 @@ std::string		Node::toString(void) {
 	// s << "Graphical:" << std::endl;
 	size_t i = 0;
 	size_t j;
+	size_t padding = log10(Node::size * Node::size - 1) + 2;
+	std::stringstream zeroPad;
+	for (size_t k = 0; k < padding - 1; k++ ) {
+		zeroPad << " ";
+	}
+	zeroPad << "\033[91m" << "0" << "\033[39m";
+
+
 	while (i < Node::size) {
 		j = 0;
 		s << "\t";
 		while (j < Node::size) {
-			if (j > 0)
-				s << " ";
+			s << std::setw(padding);
+
 			if (this->array[i][j] == 0) {
-				s << "\033[91m" << this->array[i][j] << "\033[39m";
+				s << zeroPad.str();
 			} else {
 				s << this->array[i][j];
 			}
+
+			// s << std::setw(0);
 			j++;
 		}
 		s << std::endl;

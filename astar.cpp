@@ -107,8 +107,8 @@ void		runAStar(Node *startNode) {
 
 	// A* main loop
 	Node *tmpNode;
-	int i; // counter for swaps in 4 directions
 	Node *newNode;
+	int i; // counter for swaps in 4 directions
 	do {
 		it = getBestNode(openList);
 		tmpNode = *it;
@@ -144,7 +144,7 @@ void		runAStar(Node *startNode) {
 					}
 					else {
 						// If already in openList then check if depth is less, if so update prev node
-						// This is only useful with greedy searches, classic A* already choose based on shortest path
+						// This is only useful with not admissible heuristics, classic A* heur. already choose based on shortest path
 						if (newNode->depth < (*it)->depth) {
 							(*it)->depth = newNode->depth;
 							(*it)->prev = newNode->prev;
@@ -154,7 +154,7 @@ void		runAStar(Node *startNode) {
 					}
 				} else {
 					// If already in openList then check if depth is less, if so update prev node
-					// This is only useful with greedy searches, classic A* already choose based on shortest path
+					// This is only useful with not admissible heuristics, classic A* heur. already choose based on shortest path
 					if (newNode->depth < (*it)->depth) {
 						(*it)->depth = newNode->depth;
 						(*it)->prev = newNode->prev;
