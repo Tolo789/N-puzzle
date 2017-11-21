@@ -333,6 +333,9 @@ void			Node::updateScore(void) {
 		if ((Env::options & HEUR_MASK) == HEUR_MAN) {
 			this->score += this->manhattan(it->second);
 		}
+		else if ((Env::options & HEUR_MASK) == HEUR_2) {
+			this->score += this->manhattanWithLinearConflict(it->second);
+		}
 	}
 
 	return ;
@@ -353,6 +356,93 @@ size_t			Node::manhattan(Point const &p) {
 			ret += p.y_final - p.y_current;
 	}
 	return (ret);
+}
+
+size_t			Node::manhattanWithLinearConflict(Point const &p) {
+	// Evolved manhattan that searches for conflicts when Point is in final colum/row
+	size_t	ret = 0;
+
+	if (p.value > 0) {
+		if (p.x_current > p.x_final)
+			ret += p.x_current - p.x_final;
+		else if (p.x_current < p.x_final)
+			ret += p.x_final - p.x_current;
+		else {
+			ret += this->linearHorConflict(p);
+		}
+
+		if (p.y_current > p.y_final)
+			ret += p.y_current - p.y_final;
+		else if (p.y_current < p.y_final)
+			ret += p.y_final - p.y_current;
+		else {
+			ret += this->linearVertConflict(p);
+		}
+	}
+	return (ret);
+}
+
+// size_t		Node::linearConflict(Point const &p, bool horizontalSearch) {
+// 	size_t conflicts = 0;
+// 	size_t x = (horizontalSearch) ? 0 : p.x_current;
+// 	size_t y = (horizontalSearch) ? p.y_current : 0;
+// 	while (x < Node::size && y < Node::size) {
+// 		Point &tmpPoint = this->points[this->array[y][x]];
+// 		if (tmpPoint.value != 0 && tmpPoint.value != p.value) {
+// 			if (horizontalSearch && tmpPoint.y_current == tmpPoint.y_final) {
+// 				if (tmpPoint.x_final > p.x_final && tmpPoint.x_current < p.x_current)
+// 					conflicts++;
+// 				else if (tmpPoint.x_final < p.x_final && tmpPoint.x_current > p.x_current)
+// 					conflicts++;
+// 			}
+// 			else if (!horizontalSearch && tmpPoint.x_final == tmpPoint.x_final) {
+// 				if (tmpPoint.y_final > p.y_final && tmpPoint.y_current < p.y_current)
+// 					conflicts++;
+// 				else if (tmpPoint.y_final < p.y_final && tmpPoint.y_current > p.y_current)
+// 					conflicts++;
+// 			}
+// 		}
+//
+// 		(horizontalSearch) ? x++ : y++;
+// 	}
+//
+// 	return 2 * conflicts; // every conflict increases h() by 2
+// }
+
+size_t		Node::linearHorConflict(Point const &p) {
+	size_t conflicts = 0;
+	size_t x = p.x_current;
+	size_t y = p.y_current;
+	while (++x < Node::size) {
+		Point &tmpPoint = this->points[this->array[y][x]];
+		if (tmpPoint.value != 0) {
+			if (tmpPoint.y_current == tmpPoint.y_final) {
+				if (tmpPoint.x_final > p.x_final && tmpPoint.x_current < p.x_current)
+					conflicts++;
+				else if (tmpPoint.x_final < p.x_final && tmpPoint.x_current > p.x_current)
+					conflicts++;
+			}
+		}
+	}
+
+	return 2 * conflicts; // every conflict increases h() by 2
+}
+
+size_t		Node::linearVertConflict(Point const &p) {
+	size_t conflicts = 0;
+	size_t x = p.x_current;
+	size_t y = p.y_current;
+	while (++y < Node::size) {
+		Point &tmpPoint = this->points[this->array[y][x]];
+		if (tmpPoint.value != 0) {
+			if (tmpPoint.y_final > p.y_final && tmpPoint.y_current < p.y_current)
+				conflicts++;
+			else if (tmpPoint.y_final < p.y_final && tmpPoint.y_current > p.y_current)
+				conflicts++;
+		}
+	}
+
+	return 2 * conflicts; // every conflict increases h() by 2
 }
 
 std::string		Node::toString(void) {

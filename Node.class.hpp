@@ -13,13 +13,16 @@ private:
 	size_t		**getFinalMap( void );
 	static int	getFinalPosition( size_t const value, size_t **map, size_t *finalCoords );
 	size_t		manhattan(Point const &p);
+	size_t		manhattanWithLinearConflict(Point const &p);
+	size_t		linearHorConflict(Point const &p);
+	size_t		linearVertConflict(Point const &p);
 
 protected:
 
 public:
 	static size_t			size;
-	size_t					depth;
-	size_t					score;
+	size_t					depth;	// g()
+	size_t					score;	// h()
 	std::map<size_t, Point>	points;
 	size_t					**array;
 	Node					*prev;

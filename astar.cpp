@@ -153,6 +153,16 @@ void		runAStar(Node *startNode) {
 						delete newNode;
 					}
 				} else {
+					// If already in openList then check if depth is less, if so update prev node
+					// This is only useful with greedy searches, classic A* already choose based on shortest path
+					if (newNode->depth < (*it)->depth) {
+						(*it)->depth = newNode->depth;
+						(*it)->prev = newNode->prev;
+
+						openList.insert(openList.begin(), *it);
+						closedList.erase(it);
+					}
+
 					delete newNode;
 				}
 			}
