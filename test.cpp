@@ -69,6 +69,10 @@ int				main(int ac, char **av) {
 	} else {
 		treatInput(&retTreatinput, input);
 		startNode = new Node(retTreatinput.ret);
+		if ( !Node::isSolvable(*startNode) ) {
+			std::cout << "Puzzle not solvable." << '\n';
+			return (0);
+		}
 	}
 	runAStar(startNode);
 	std::cout << "Total number of states: " << Env::totalNumberOfStates << std::endl;

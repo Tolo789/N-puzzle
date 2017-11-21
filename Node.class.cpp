@@ -7,7 +7,7 @@
 
 
 /* STATIC VARIABLES ==========================================================*/
-size_t Node::size = 0;
+size_t Node::size = 3;
 
 /* CONSTRUCTORS ==============================================================*/
 
@@ -355,6 +355,17 @@ size_t			Node::manhattan(Point const &p) {
 	return (ret);
 }
 
+/*
+size_t			Node::tieBreaking(Point const &p) {
+dx1 = current.x - goal.x
+dy1 = current.y - goal.y
+dx2 = start.x - goal.x
+dy2 = start.y - goal.y
+cross = abs(dx1*dy2 - dx2*dy1)
+heuristic += cross*0.001
+}
+*/
+#include <stdio.h>//
 std::string		Node::toString(void) {
 	std::stringstream		s;
 
@@ -386,6 +397,67 @@ std::string		Node::toString(void) {
 
 
 	return (s.str());
+}
+
+bool			Node::isSolvable( Node &node ) {
+	Point	*tmp;
+	size_t	n = 0;
+	size_t	zero_position;
+
+	size_t offset = 0;
+	size_t x = 0;
+	size_t y = 0;
+	int vx = 1;
+	int vy = 0;
+	for (size_t i = 0; i < Node::size * Node::size; i++) {
+		std::cout << "i:"<<i<<" v:"<< node.array[y][x] << '\n';
+		if (node.array[y][x] == 0) {
+			zero_position = i + 1;
+			break ;
+		}
+		if (x == Node::size - offset - 1 && y == offset) {
+			vx = 0;
+			vy = 1;
+		}
+		else if (y == Node::size - offset - 1 && x == Node::size - offset - 1) {
+			vx = -1;
+			vy = 0;
+		}
+		else if (i > 0 && x == offset && y == Node::size - offset - 1) {
+			vx = 0;
+			vy = -1;
+		}
+		else if (i > 0 && y == offset+1 && x == offset) {
+			vx = 1;
+			vy = 0;
+			offset++;
+			y = offset;
+			x = offset - 1;
+		}
+		x += vx;
+		y += vy;
+	}
+
+	for ( size_t i = 0; i < Node::size * Node::size; i++ ) {
+		tmp = &node.points.find(i)->second;
+	// 	std::cout << tmp->toString() << '\n';
+		if ( tmp->x_current != tmp->x_final || tmp->y_current != tmp->y_final ) {
+			n++;
+		}
+	}
+	std::cout << "n:" << n << " zero_position:" << zero_position << '\n';
+	std::cout << "((n / 2) & 1 && zero_position & 1):" << ((n / 2) & 1 && zero_position & 1) << '\n';
+	std::cout << "(!((n / 2) & 1) && !(zero_position & 1)):" << !(!((n / 2) & 1) && !(zero_position & 1)) << '\n';
+	printf("%d\n", (n / 2) & 1);
+	printf("%d\n", zero_position & 1);
+	if ((n & 1) == (zero_position & 1))
+		return (true);
+	else if (!(n & 1) && ((n / 2) & 1) == (zero_position & 1))
+		return (true);
+	else
+		return (false);
+	// return ((( || (n / 2) & 1) && zero_position & 1) || (!((n / 2) & 1) && !(zero_position & 1)));
+	// return (false);
 }
 
 /* NON MEMBER FUNCTIONS ======================================================*/

@@ -12,7 +12,7 @@ private:
 
 	size_t		**getFinalMap( void );
 	static int	getFinalPosition( size_t const value, size_t **map, size_t *finalCoords );
-	size_t		manhattan(Point const &p);
+	size_t		manhattan( Point const &p );
 
 protected:
 
@@ -35,6 +35,7 @@ public:
 
 	void			updateScore(void);
 	std::string		toString(void);
+	static bool		isSolvable( Node &node );
 };
 
 #endif
