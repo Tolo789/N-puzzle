@@ -338,6 +338,9 @@ void			Node::updateScore(void) {
 		else if ((Env::options & HEUR_MASK) == HEUR_2) {
 			this->score += this->manhattanWithLinearConflict(it->second);
 		}
+		else if ((Env::options & HEUR_MASK) == HEUR_3) {
+			this->score += this->manhattanLinearMisplaced(it->second);
+		}
 	}
 
 	return ;
@@ -450,6 +453,37 @@ size_t		Node::linearVertConflict(Point const &p) {
 	}
 
 	return 8 * conflicts; // every conflict increases h() by at least 2, but actually is even more
+}
+
+size_t			Node::manhattanLinearMisplaced(Point const &p) {
+	// Evolved manhattanLinear where we add number of tiles out of place
+	size_t	ret = 0;
+
+	if (p.value > 0) {
+		if (p.x_current > p.x_final)
+			ret += p.x_current - p.x_final;
+		else if (p.x_current < p.x_final)
+			ret += p.x_final - p.x_current;
+		else {
+			ret += 0;
+			// ret += this->linearVertConflict(p);
+			ret += linearConflict(p, false);
+		}
+
+		if (p.y_current > p.y_final)
+			ret += p.y_current - p.y_final;
+		else if (p.y_current < p.y_final)
+			ret += p.y_final - p.y_current;
+		else {
+			ret += 0;
+			// ret += this->linearHorConflict(p);
+			ret += linearConflict(p, true);
+		}
+
+		if (p.x_current != p.x_final || p.y_current != p.y_final)
+			ret += 1;
+	}
+	return (ret);
 }
 
 std::string		Node::toString(void) {
