@@ -62,16 +62,24 @@ int				main(int ac, char **av) {
 		return (ft_error(INVALID_N_INPUT_FILE, 1));
 	} else if ( ac > 1 && ((Env::options & ITERATIONS) || (Env::options & SIZE)) ) {
 		return (ft_error(INVALID_PARAM_COMB, 1));
-	} else if ( ac == 2 && read_file(av[ac - 1], &input) < 0 ) {
-		return (ft_error("invalid input file", 1));
-	} else if ( !input.length() ) {
+	} else if ( ac == 2 && (read_file(av[ac - 1], &input) < 0 || input.length() == 0) ) {
+		return (ft_error("Error: invalid input file", 1));
+	} else if ( ac == 1 ) {
 		startNode = new Node();
 	} else {
-		treatInput(&retTreatinput, input);
-		startNode = new Node(retTreatinput.ret);
-		if ( !Node::isSolvable(*startNode) ) {
-			std::cout << "Puzzle not solvable." << '\n';
-			return (0);
+		if (treatInput(&retTreatinput, input)) {
+			return (1);
+		}
+		try {
+			startNode = new Node(retTreatinput.ret);
+			if ( !Node::isSolvable(*startNode) ) {
+				std::cout << "Puzzle not solvable." << '\n';
+				return (0);
+			}
+		}
+		catch (Node::MissingMemberException & e) {
+			// std::cout << e.what() << std::endl;
+			return (ft_error(e.what(), 1));
 		}
 	}
 	runAStar(startNode);

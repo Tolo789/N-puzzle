@@ -2,9 +2,12 @@
 #include <sstream>
 #include <string>
 
+#include <iomanip>
+#include <math.h>
+
 #include "Node.class.hpp"
 #include "Env.class.hpp"
-
+#include "error.hpp"
 
 /* STATIC VARIABLES ==========================================================*/
 size_t Node::size = 3;
@@ -155,7 +158,8 @@ Node::Node( std::string **input ) : depth(0), prev(NULL) {
 			value = static_cast<size_t>(std::stoi(input[y][x], &pos , 10));
 			if (Node::getFinalPosition( value, map, finalCoords ) < 0) {
 				/* ERROR HANDLING */
-				std::cout << "ERROR" << std::endl;
+				throw Node::MissingMemberException();
+				// std::cout << "ERROR" << std::endl;
 			} else {
 				Point newPoint = Point(value, x, y, finalCoords[0], finalCoords[1]);
 				this->array[y][x] = value;
@@ -171,6 +175,15 @@ Node::Node( std::string **input ) : depth(0), prev(NULL) {
 		delete [] map[i];
 	}
 	delete [] map;
+	for (size_t check = 0; check < Node::size * Node::size; check++) {
+		if (this->points.find(check) == this->points.end()) {
+			throw Node::MissingMemberException();
+			// std::cout << "no" << '\n';
+		}
+	}
+}
+
+Node::MissingMemberException::MissingMemberException( void ) throw() {
 }
 
 Node::Node( Node const & src ) {
@@ -240,6 +253,9 @@ Node::~Node( void ) {
 	}
 	delete this->array;
 	this->points.clear();
+}
+
+Node::MissingMemberException::~MissingMemberException( void ) throw() {
 }
 
 /* MEMBER FUNCTIONS ==========================================================*/
@@ -333,6 +349,12 @@ void			Node::updateScore(void) {
 		if ((Env::options & HEUR_MASK) == HEUR_MAN) {
 			this->score += this->manhattan(it->second);
 		}
+		else if ((Env::options & HEUR_MASK) == HEUR_2) {
+			this->score += this->manhattanWithLinearConflict(it->second);
+		}
+		else if ((Env::options & HEUR_MASK) == HEUR_3) {
+			this->score += this->manhattanLinearMisplaced(it->second);
+		}
 	}
 
 	return ;
@@ -355,17 +377,129 @@ size_t			Node::manhattan(Point const &p) {
 	return (ret);
 }
 
-/*
-size_t			Node::tieBreaking(Point const &p) {
-dx1 = current.x - goal.x
-dy1 = current.y - goal.y
-dx2 = start.x - goal.x
-dy2 = start.y - goal.y
-cross = abs(dx1*dy2 - dx2*dy1)
-heuristic += cross*0.001
+size_t			Node::manhattanWithLinearConflict(Point const &p) {
+	// Evolved manhattan that searches for conflicts when Point is in final colum/row
+	size_t	ret = 0;
+
+	if (p.value > 0) {
+		if (p.x_current > p.x_final)
+			ret += p.x_current - p.x_final;
+		else if (p.x_current < p.x_final)
+			ret += p.x_final - p.x_current;
+		else {
+			ret += this->linearVertConflict(p);
+			// ret += linearConflict(p, false);
+		}
+
+		if (p.y_current > p.y_final)
+			ret += p.y_current - p.y_final;
+		else if (p.y_current < p.y_final)
+			ret += p.y_final - p.y_current;
+		else {
+			ret += this->linearHorConflict(p);
+			// ret += linearConflict(p, true);
+		}
+	}
+	return (ret);
 }
-*/
-#include <stdio.h>//
+
+size_t		Node::linearConflict(Point const &p, bool horizontalSearch) {
+	size_t conflicts = 0;
+	size_t x = (horizontalSearch) ? 0 : p.x_current;
+	size_t y = (horizontalSearch) ? p.y_current : 0;
+	(horizontalSearch) ? x++ : y++;
+	while (x < Node::size && y < Node::size) {
+		Point &tmpPoint = this->points[this->array[y][x]];
+		if (tmpPoint.value != 0 && tmpPoint.value != p.value) {
+			if (horizontalSearch && tmpPoint.y_current == tmpPoint.y_final) {
+				if (tmpPoint.x_final > p.x_final && tmpPoint.x_current < p.x_current)
+					conflicts++;
+				else if (tmpPoint.x_final < p.x_final && tmpPoint.x_current > p.x_current)
+					conflicts++;
+			}
+			else if (!horizontalSearch && tmpPoint.x_current == tmpPoint.x_final) {
+				if (tmpPoint.y_final > p.y_final && tmpPoint.y_current < p.y_current)
+					conflicts++;
+				else if (tmpPoint.y_final < p.y_final && tmpPoint.y_current > p.y_current)
+					conflicts++;
+			}
+		}
+
+		(horizontalSearch) ? x++ : y++;
+	}
+
+	return 2 * conflicts; // every conflict increases h() by 2
+}
+
+size_t		Node::linearHorConflict(Point const &p) {
+	size_t conflicts = 0;
+	size_t x = p.x_current;
+	size_t y = p.y_current;
+	while (++x < Node::size) {
+		Point &tmpPoint = this->points[this->array[y][x]];
+		if (tmpPoint.value != 0) {
+			if (tmpPoint.y_current == tmpPoint.y_final) {
+				if (tmpPoint.x_final > p.x_final && tmpPoint.x_current < p.x_current)
+					conflicts++;
+				else if (tmpPoint.x_final < p.x_final && tmpPoint.x_current > p.x_current)
+					conflicts++;
+			}
+		}
+	}
+
+	return 8 * conflicts; // every conflict increases h() by at least 2, but actually is even more
+}
+
+size_t		Node::linearVertConflict(Point const &p) {
+	size_t conflicts = 0;
+	size_t x = p.x_current;
+	size_t y = p.y_current;
+	while (++y < Node::size) {
+		Point &tmpPoint = this->points[this->array[y][x]];
+		if (tmpPoint.value != 0) {
+			if (tmpPoint.x_current == tmpPoint.x_final) {
+				if (tmpPoint.y_final > p.y_final && tmpPoint.y_current < p.y_current)
+					conflicts++;
+				else if (tmpPoint.y_final < p.y_final && tmpPoint.y_current > p.y_current)
+					conflicts++;
+			}
+		}
+	}
+
+	return 8 * conflicts; // every conflict increases h() by at least 2, but actually is even more
+}
+
+size_t			Node::manhattanLinearMisplaced(Point const &p) {
+	// Evolved manhattanLinear where we add number of tiles out of place
+	size_t	ret = 0;
+
+	if (p.value > 0) {
+		if (p.x_current > p.x_final)
+			ret += p.x_current - p.x_final;
+		else if (p.x_current < p.x_final)
+			ret += p.x_final - p.x_current;
+		else {
+			ret += 0;
+			// ret += this->linearVertConflict(p);
+			ret += linearConflict(p, false);
+		}
+
+		if (p.y_current > p.y_final)
+			ret += p.y_current - p.y_final;
+		else if (p.y_current < p.y_final)
+			ret += p.y_final - p.y_current;
+		else {
+			ret += 0;
+			// ret += this->linearHorConflict(p);
+			ret += linearConflict(p, true);
+		}
+
+		if (p.x_current != p.x_final || p.y_current != p.y_final)
+			ret += 1;
+	}
+	return (ret);
+}
+
 std::string		Node::toString(void) {
 	std::stringstream		s;
 
@@ -378,17 +512,27 @@ std::string		Node::toString(void) {
 	// s << "Graphical:" << std::endl;
 	size_t i = 0;
 	size_t j;
+	size_t padding = log10(Node::size * Node::size - 1) + 2;
+	std::stringstream zeroPad;
+	for (size_t k = 0; k < padding - 1; k++ ) {
+		zeroPad << " ";
+	}
+	zeroPad << "\033[91m" << "0" << "\033[39m";
+
+
 	while (i < Node::size) {
 		j = 0;
 		s << "\t";
 		while (j < Node::size) {
-			if (j > 0)
-				s << " ";
+			s << std::setw(padding);
+
 			if (this->array[i][j] == 0) {
-				s << "\033[91m" << this->array[i][j] << "\033[39m";
+				s << zeroPad.str();
 			} else {
 				s << this->array[i][j];
 			}
+
+			// s << std::setw(0);
 			j++;
 		}
 		s << std::endl;
@@ -401,6 +545,8 @@ std::string		Node::toString(void) {
 
 bool			Node::isSolvable( Node &node ) {
 	Point	*tmp;
+	Point	*tmp2;
+	Node	tmpNode = node;
 	size_t	n = 0;
 	size_t	zero_position;
 
@@ -412,7 +558,7 @@ bool			Node::isSolvable( Node &node ) {
 	for (size_t i = 0; i < Node::size * Node::size; i++) {
 		std::cout << "i:"<<i<<" v:"<< node.array[y][x] << '\n';
 		if (node.array[y][x] == 0) {
-			zero_position = i + 1;
+			zero_position = i;
 			break ;
 		}
 		if (x == Node::size - offset - 1 && y == offset) {
@@ -438,26 +584,39 @@ bool			Node::isSolvable( Node &node ) {
 		y += vy;
 	}
 
+	// zero_position = node.manhattan(node.points[0]);
+
 	for ( size_t i = 0; i < Node::size * Node::size; i++ ) {
-		tmp = &node.points.find(i)->second;
+		tmp = &tmpNode.points.find(i)->second;
+
 	// 	std::cout << tmp->toString() << '\n';
 		if ( tmp->x_current != tmp->x_final || tmp->y_current != tmp->y_final ) {
+			tmp2 = &tmpNode.points[tmpNode.array[tmp->y_final][tmp->x_final ]];
+			tmpNode.array[tmp->y_current][tmp->x_current ] = tmp2->value;
+			Point::swapPoint( *tmp, *tmp2 );
+			tmpNode.array[tmp->y_final][tmp->x_final ] = tmp->value;
 			n++;
 		}
 	}
 	std::cout << "n:" << n << " zero_position:" << zero_position << '\n';
-	std::cout << "((n / 2) & 1 && zero_position & 1):" << ((n / 2) & 1 && zero_position & 1) << '\n';
-	std::cout << "(!((n / 2) & 1) && !(zero_position & 1)):" << !(!((n / 2) & 1) && !(zero_position & 1)) << '\n';
-	printf("%d\n", (n / 2) & 1);
-	printf("%d\n", zero_position & 1);
-	if ((n & 1) == (zero_position & 1))
+	// std::cout << tmpNode.toString() << '\n';
+	// std::cout << "((n / 2) & 1 && zero_position & 1):" << ((n / 2) & 1 && zero_position & 1) << '\n';
+	// std::cout << "(!((n / 2) & 1) && !(zero_position & 1)):" << !(!((n / 2) & 1) && !(zero_position & 1)) << '\n';
+	// printf("%d\n", (n / 2) & 1);
+	// printf("%d\n", zero_position & 1);
+	if ((Node::size & 1) && !(n & 1))
 		return (true);
-	else if (!(n & 1) && ((n / 2) & 1) == (zero_position & 1))
-		return (true);
-	else
-		return (false);
+	else {
+		if ((Node::size - 1 - node.points[0].y_current) & 1)
+			return (!(n & 1));
+		else
+			return (n & 1);
+	}
 	// return ((( || (n / 2) & 1) && zero_position & 1) || (!((n / 2) & 1) && !(zero_position & 1)));
-	// return (false);
+}
+
+const char	*Node::MissingMemberException::what( void ) const throw() {
+	return (BAD_MEMBER);
 }
 
 /* NON MEMBER FUNCTIONS ======================================================*/
