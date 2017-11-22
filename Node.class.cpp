@@ -604,8 +604,8 @@ bool			Node::isSolvable( Node &node ) {
 	// std::cout << "(!((n / 2) & 1) && !(zero_position & 1)):" << !(!((n / 2) & 1) && !(zero_position & 1)) << '\n';
 	// printf("%d\n", (n / 2) & 1);
 	// printf("%d\n", zero_position & 1);
-	if ((Node::size & 1) && !(n & 1))
-		return (true);
+	if ((Node::size & 1))
+		return (!(n & 1));
 	else {
 		if ((Node::size - 1 - node.points[0].y_current) & 1)
 			return (!(n & 1));
