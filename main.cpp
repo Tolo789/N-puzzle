@@ -7,37 +7,9 @@
 #include "Node.class.hpp"
 #include "Env.class.hpp"
 #include "options_handling.hpp"
-#include "astar.hpp"
-#include "astar2.hpp"
 #include "error.hpp"
-
-#include <stdio.h>//
-
-static std::string		**treatInput(std::string input) {
-	std::vector<std::string>	splitLine;
-	std::string					**ret;
-	std::string					line;
-	std::istringstream			f(input);
-
-	while (getline(f, line, '\n')) {
-		splitLine.push_back(line);
-	}
-	std::cout << splitLine.size() << std::endl;
-	size_t	splitLineSize = splitLine.size();
-	ret = new std::string* [splitLineSize];
-	for (size_t i = 0; i < splitLineSize; i++) {
-		std::istringstream	p(splitLine[i]);
-		std::vector<std::string>	subSplitLine;
-		while (getline(p, line, ' ')) {
-			subSplitLine.push_back(line);
-		}
-		ret[i] = new std::string [subSplitLine.size()];
-		for (size_t j = 0; j < subSplitLine.size(); j++) {
-			ret[i][j] = std::string(subSplitLine[j]);
-		}
-	}
-	return (ret);
-}
+#include "treat_input.hpp"
+#include "astar.hpp"
 
 static int	read_file(char const *filename, std::string *input) {
 	std::fstream		file;
@@ -47,11 +19,10 @@ static int	read_file(char const *filename, std::string *input) {
 	if ( !filename ) {
 		return ( 0 );
 	} else {
-		std::cout << filename << '\n';
 		file.open( filename, std::ios::in );
 		if ( file.is_open() ) {
 			while ( getline(file, line) ) {
-				sstream << line << '\n';
+				sstream << line << std::endl;
 			}
 			*input = sstream.str();
 			return ( 0 );
@@ -65,25 +36,25 @@ static int	read_file(char const *filename, std::string *input) {
 static int		usage(char const *bin) {
 	std::cout << "Usage: " << bin << " [options] [input_file]" << std::endl << std::endl;
 	std::cout << "Options:" << std::endl;
+	std::cout << "  -" << SLOW_PRINT_CHAR << " <speed> (min: 1, max: 5000) : display slowly the solution." << std::endl;
 	std::cout << "  -" << HELP_CHAR << ": display help menu and exits." << std::endl;
 	std::cout << "  -" << HEUR_CHAR << " <heuristic>: (default: man)" << std::endl;
 	std::cout << "    heuristics:" << std::endl;
 	std::cout << "      '" << HEUR_MAN_STR << "' : Manhattan" << std::endl;
-	std::cout << "      '" << HEUR_2_STR << "' : ..." << std::endl;
-	std::cout << "      '" << HEUR_3_STR << "' : ..." << std::endl;
+	std::cout << "      '" << HEUR_2_STR << "' : Manhattan with linear conflict" << std::endl;
+	std::cout << "      '" << HEUR_3_STR << "' : Misplaced tiles" << std::endl;
+	std::cout << "      '" << HEUR_4_STR << "' : Manhattan with linear conflict and misplaced tiles" << std::endl;
 	std::cout << "  /* If you don't provide any input file */" << std::endl;
-	std::cout << "  -" << SIZE_CHAR << " <size> (default: 3): set a size for a random generated puzzle" << std::endl;
+	std::cout << "  -" << SIZE_CHAR << " <size> (min: 2, max: 100, default: 3): set a size for a random generated puzzle" << std::endl;
 	std::cout << "  -" << ITERATIONS_CHAR << " <iterations> (default: 10000): set a number of iterations for a random generated puzzle" << std::endl;
 	return (1);
 }
 
 int				main(int ac, char **av) {
-	std::string		*input;
+	std::string		input;
+	t_treatInput	retTreatinput;
+	Node			*startNode;
 
-	t_puzzle p = {0, 0};
-	input = NULL;
-	// if (ac == 1) {
-		// return (usage(av[0]));
 	if ( get_options(&ac, av) ) {
 		return (1);
 	} else if ( Env::options & HELP ) {
@@ -92,30 +63,27 @@ int				main(int ac, char **av) {
 		return (ft_error(INVALID_N_INPUT_FILE, 1));
 	} else if ( ac > 1 && ((Env::options & ITERATIONS) || (Env::options & SIZE)) ) {
 		return (ft_error(INVALID_PARAM_COMB, 1));
+	} else if ( ac == 2 && (read_file(av[ac - 1], &input) < 0 || input.length() == 0) ) {
+		return (ft_error(INVALID_INPUT_FILE, 1));
+	} else if ( ac == 1 ) {
+		startNode = new Node();
+	} else {
+		if (treatInput(&retTreatinput, input)) {
+			return (1);
+		}
+		try {
+			startNode = new Node(retTreatinput.ret);
+			if ( !Node::isSolvable(*startNode) ) {
+				return (ft_error(NOT_SOLVABLE, 1));
+			}
+		}
+		catch (Node::MissingMemberException & e) {
+			return (ft_error(e.what(), 1));
+		}
 	}
-
-	std::string **ret;
-	ret = treatInput("5 4 2\n7 0 6\n3 8 1"); // 26 moves to solve
-	// ret = treatInput("0 1 2\n8 6 4\n5 7 3"); // 16 moves to solve
-	// ret = treatInput("8 1 2\n7 4 3\n0 6 5"); // 6 moves to solve
-	// ret = treatInput("1 2 0\n8 4 3\n7 6 5"); // 2 moves to solve
-	// ret = treatInput("12 3 5 2\n0 13 9 14\n15 4 11 8\n10 7 1 6"); // 4x4, HARD and LONG
-	// ret = treatInput("11 2 3 4\n14 1 13 9\n5 0 8 6\n12 10 15 7"); // 4x4, same as above
-	// ret = treatInput("2 3\n0 1");
-	Node *startNode = new Node(3, ret);
-	std::cout << " ### RUN A-STAR #########################" << '\n';
-	// runAStar(startNode, ac > 1);
-	runAStar2(startNode, ac > 1);
-	// if ( read_file(av[ac - 1], input) < 0 )
-	// 	return (1);
-	// if (!input) {
-	// 	// generate_puzzle()
-	// } else {
-	// 	std::string **ret = treatInput("1 2 3\n4 0 6\n7 8 5");
-	// }
-	delete [] ret[0];
-	delete [] ret[1];
-	// delete [] ret[2];
-	delete [] ret;
+	runAStar(startNode);
+	std::cout << "Total number of states: " << Env::totalNumberOfStates << std::endl;
+	std::cout << "Max number of states: " << Env::maxNumberOfState << std::endl;
+	std::cout << "Number of move: " << Env::numberOfMove << std::endl;
 	return 0;
 }

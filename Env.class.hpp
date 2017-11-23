@@ -7,10 +7,11 @@
 # define	HEUR_MAN		0x01
 # define	HEUR_2			0x02
 # define	HEUR_3			0x04
-# define	SIZE			0x08
-# define	ITERATIONS		0x10
-# define	HELP			0x20
-# define	SLOW_PRINT		0x40
+# define	HEUR_4			0x08
+# define	SIZE			0x10
+# define	ITERATIONS		0x20
+# define	HELP			0x40
+# define	SLOW_PRINT		0x80
 
 # define	HEUR_CHAR		'e'
 # define	SIZE_CHAR		's'
@@ -19,13 +20,14 @@
 # define	SLOW_PRINT_CHAR	'p'
 
 # define	HEUR_MAN_STR	"man"
-# define	HEUR_2_STR		"2"
-# define	HEUR_3_STR		"3"
+# define	HEUR_2_STR		"linear"
+# define	HEUR_3_STR		"misplaced"
+# define	HEUR_4_STR		"all"
 
 # define	PARAMS_STR		"hesip"
 
 /* MASKS */
-# define	HEUR_MASK		0x07
+# define	HEUR_MASK		0x0f
 
 typedef struct	s_puzzle {
 	size_t	size;

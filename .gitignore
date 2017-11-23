@@ -1,3 +1,5 @@
 *.o
 n-puzzle
 a.out
+test/u*
+test/s*

@@ -44,6 +44,8 @@ static int	setHeuristic(char const *param) {
 		Env::options |= HEUR_2;
 	} else if (!strcmp(param, HEUR_3_STR)) {
 		Env::options |= HEUR_3;
+	} else if (!strcmp(param, HEUR_4_STR)) {
+		Env::options |= HEUR_4;
 	} else {
 		return (ft_error(INVALID_HEUR, 1));
 	}

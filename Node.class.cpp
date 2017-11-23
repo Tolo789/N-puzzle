@@ -264,15 +264,16 @@ size_t **Node::getFinalMap() {
 	int direction = 0; // 0 = right, 1 = down, 2 = left, 3 = up
 	size_t offset = 0;
 	size_t steps = Node::size - offset;
+	size_t x = 0;
+	size_t y = 0;
+	size_t i = 1;
 	int changeOffsetCount = 1; // usually change offset after 2 direction change, but at the beginning is after the first direction change
 	size_t max = (Node::size * Node::size) - 1;
 	size_t	**map = new size_t* [Node::size];
+
 	for (size_t i = 0; i < Node::size; i++) {
 		map[i] = new size_t [Node::size];
 	}
-	size_t x = 0;
-	size_t y = 0;
-
 	// set to zero
 	y = 0;
 	while (y < Node::size) {
@@ -283,17 +284,14 @@ size_t **Node::getFinalMap() {
 		}
 		y++;
 	}
-
 	// Fill numbers with snake form
 	y = 0;
 	x = 0;
-	size_t i = 1;
 	while (i <= max) {
 		map[y][x] = i;
 		steps--;
 		if (steps == 0) {
 			direction = (direction + 1) % 4;
-
 			changeOffsetCount--;
 			if (changeOffsetCount == 0) {
 				changeOffsetCount = 2;
@@ -301,7 +299,6 @@ size_t **Node::getFinalMap() {
 			}
 			steps = Node::size - offset;
 		}
-
 		switch (direction) {
 			case 0:
 				x++;
@@ -321,7 +318,6 @@ size_t **Node::getFinalMap() {
 
 		i++;
 	}
-
 	return map;
 }
 
@@ -342,8 +338,8 @@ size_t *finalCoords ) {
 }
 
 void			Node::updateScore(void) {
-	// TODO: score should depend on heuristic choice
 	std::map<size_t, Point>::iterator it;
+
 	this->score = 0;
 	for (it = this->points.begin(); it != this->points.end(); it++) {
 		if ((Env::options & HEUR_MASK) == HEUR_MAN) {
@@ -353,6 +349,9 @@ void			Node::updateScore(void) {
 			this->score += this->manhattanWithLinearConflict(it->second);
 		}
 		else if ((Env::options & HEUR_MASK) == HEUR_3) {
+			this->score += this->tilesMisplaced(it->second);
+		}
+		else if ((Env::options & HEUR_MASK) == HEUR_4) {
 			this->score += this->manhattanLinearMisplaced(it->second);
 		}
 	}
@@ -388,7 +387,6 @@ size_t			Node::manhattanWithLinearConflict(Point const &p) {
 			ret += p.x_final - p.x_current;
 		else {
 			ret += this->linearVertConflict(p);
-			// ret += linearConflict(p, false);
 		}
 
 		if (p.y_current > p.y_final)
@@ -397,38 +395,9 @@ size_t			Node::manhattanWithLinearConflict(Point const &p) {
 			ret += p.y_final - p.y_current;
 		else {
 			ret += this->linearHorConflict(p);
-			// ret += linearConflict(p, true);
 		}
 	}
 	return (ret);
-}
-
-size_t		Node::linearConflict(Point const &p, bool horizontalSearch) {
-	size_t conflicts = 0;
-	size_t x = (horizontalSearch) ? 0 : p.x_current;
-	size_t y = (horizontalSearch) ? p.y_current : 0;
-	(horizontalSearch) ? x++ : y++;
-	while (x < Node::size && y < Node::size) {
-		Point &tmpPoint = this->points[this->array[y][x]];
-		if (tmpPoint.value != 0 && tmpPoint.value != p.value) {
-			if (horizontalSearch && tmpPoint.y_current == tmpPoint.y_final) {
-				if (tmpPoint.x_final > p.x_final && tmpPoint.x_current < p.x_current)
-					conflicts++;
-				else if (tmpPoint.x_final < p.x_final && tmpPoint.x_current > p.x_current)
-					conflicts++;
-			}
-			else if (!horizontalSearch && tmpPoint.x_current == tmpPoint.x_final) {
-				if (tmpPoint.y_final > p.y_final && tmpPoint.y_current < p.y_current)
-					conflicts++;
-				else if (tmpPoint.y_final < p.y_final && tmpPoint.y_current > p.y_current)
-					conflicts++;
-			}
-		}
-
-		(horizontalSearch) ? x++ : y++;
-	}
-
-	return 2 * conflicts; // every conflict increases h() by 2
 }
 
 size_t		Node::linearHorConflict(Point const &p) {
@@ -446,8 +415,7 @@ size_t		Node::linearHorConflict(Point const &p) {
 			}
 		}
 	}
-
-	return 8 * conflicts; // every conflict increases h() by at least 2, but actually is even more
+	return (2 * conflicts); // every conflict increases h() by at least 2, but actually is even more
 }
 
 size_t		Node::linearVertConflict(Point const &p) {
@@ -465,8 +433,18 @@ size_t		Node::linearVertConflict(Point const &p) {
 			}
 		}
 	}
+	return (2 * conflicts); // every conflict increases h() by at least 2, but actually is even more
+}
 
-	return 8 * conflicts; // every conflict increases h() by at least 2, but actually is even more
+size_t			Node::tilesMisplaced(Point const &p) {
+	// Evolved manhattanLinear where we add number of tiles out of place
+	size_t	ret = 0;
+
+	if (p.value > 0) {
+		if (p.x_current != p.x_final || p.y_current != p.y_final)
+			ret += 1;
+	}
+	return (ret);
 }
 
 size_t			Node::manhattanLinearMisplaced(Point const &p) {
@@ -479,21 +457,15 @@ size_t			Node::manhattanLinearMisplaced(Point const &p) {
 		else if (p.x_current < p.x_final)
 			ret += p.x_final - p.x_current;
 		else {
-			ret += 0;
-			// ret += this->linearVertConflict(p);
-			ret += linearConflict(p, false);
+			ret += this->linearVertConflict(p);
 		}
-
 		if (p.y_current > p.y_final)
 			ret += p.y_current - p.y_final;
 		else if (p.y_current < p.y_final)
 			ret += p.y_final - p.y_current;
 		else {
-			ret += 0;
-			// ret += this->linearHorConflict(p);
-			ret += linearConflict(p, true);
+			ret += this->linearHorConflict(p);
 		}
-
 		if (p.x_current != p.x_final || p.y_current != p.y_final)
 			ret += 1;
 	}
@@ -502,51 +474,37 @@ size_t			Node::manhattanLinearMisplaced(Point const &p) {
 
 std::string		Node::toString(void) {
 	std::stringstream		s;
-
-	s << "Score: " << this->score << ", Depth: " << this->depth << std::endl;
-	// s << "Points:\n";
-	// std::map<size_t, Point>::iterator it;
-	// for (it = this->points.begin(); it != this->points.end(); it++) {
-	// 	s << "\t" << (it->second).toString();
-	// }
-	// s << "Graphical:" << std::endl;
 	size_t i = 0;
 	size_t j;
 	size_t padding = log10(Node::size * Node::size - 1) + 2;
 	std::stringstream zeroPad;
+
+	s << "Score: " << this->score << ", Depth: " << this->depth << std::endl;
 	for (size_t k = 0; k < padding - 1; k++ ) {
 		zeroPad << " ";
 	}
 	zeroPad << "\033[91m" << "0" << "\033[39m";
-
-
 	while (i < Node::size) {
 		j = 0;
 		s << "\t";
 		while (j < Node::size) {
 			s << std::setw(padding);
-
 			if (this->array[i][j] == 0) {
 				s << zeroPad.str();
 			} else {
 				s << this->array[i][j];
 			}
-
-			// s << std::setw(0);
 			j++;
 		}
 		s << std::endl;
 		i++;
 	}
-
-
 	return (s.str());
 }
 
-bool			Node::isSolvable( Node &node ) {
-	Point	*tmp;
-	Point	*tmp2;
+size_t			Node::getInversion( Node &node ) {
 	Node	tmpNode = node;
+	size_t	array[Node::size * Node::size];
 	size_t	n = 0;
 	for (size_t y = 0; y < Node::size; y++) {
 		for (size_t x = 0; x < Node::size; x++) {
@@ -560,13 +518,39 @@ bool			Node::isSolvable( Node &node ) {
 			}
 		}
 	}
+	return (n);
+}
+
+size_t			Node::getZero( Node &node ) {
+	for (size_t y = 0; y < Node::size; y++) {
+		for (size_t x = 0; x < Node::size; x++) {
+			if (node.array[y][x] == 0) {
+				return ((Node::size * Node::size) - (y * Node::size + x));
+			}
+		}
+	}
+	return (0);
+}
+
+bool			Node::isSolvable( Node &node ) {
+	size_t const	n = Node::getInversion(node);
+	size_t			ncpy = 0;
+	Node			nodecpy = node;
+
+	for (size_t i = 0; i < Node::size; i++) {
+		delete [] nodecpy.array[i];
+	}
+	delete [] nodecpy.array;
+	nodecpy.array = nodecpy.getFinalMap();
+	ncpy = Node::getInversion(nodecpy);
 	if (Node::size & 1)
-		return (n & 1);
+		return ((n & 1) == (ncpy & 1));
 	else {
-		if ((Node::size - 1 - node.points[0].y_current) & 1)
-			return (n & 1);
-		else
-			return (!(n & 1));
+		return (((n + Node::getZero(node)) & 1) == ((ncpy + Node::getZero(nodecpy)) & 1));
+		// if ((Node::size - node.points[0].y_current) & 1)
+		// 	return ((n & 1) == (ncpy & 1));
+		// else
+		// 	return (!((n & 1) == (ncpy & 1)));
 	}
 }
 

@@ -10,14 +10,17 @@ class Node {
 
 private:
 
-	size_t		**getFinalMap( void );
-	static int	getFinalPosition( size_t const value, size_t **map, size_t *finalCoords );
-	size_t		manhattan(Point const &p);
-	size_t		manhattanWithLinearConflict(Point const &p);
-	size_t		manhattanLinearMisplaced(Point const &p);
-	size_t		linearConflict(Point const &p, bool horizontalSearch);
-	size_t		linearHorConflict(Point const &p);
-	size_t		linearVertConflict(Point const &p);
+	size_t			**getFinalMap( void );
+	static size_t	getZero( Node &node );
+	static int		getFinalPosition( size_t const value, size_t **map, size_t *finalCoords );
+	static size_t	getInversion( Node &node );
+	size_t			manhattan(Point const &p);
+	size_t			manhattanWithLinearConflict(Point const &p);
+	size_t			manhattanLinearMisplaced(Point const &p);
+	size_t			linearConflict(Point const &p, bool horizontalSearch);
+	size_t			linearHorConflict(Point const &p);
+	size_t			linearVertConflict(Point const &p);
+	size_t			tilesMisplaced(Point const &p);
 
 protected:
 

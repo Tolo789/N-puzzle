@@ -13,6 +13,8 @@
 # define INVALID_LINE_FORMAT "Error: bad line format."
 # define INVALID_PUZZLE_SIZE "Error: size and puzzle don't match."
 # define BAD_MEMBER "Error: a member is missing or found a unknown member in the puzzle."
+# define NOT_SOLVABLE "Error: puzzle not solvable."
+# define INVALID_INPUT_FILE "Error: invalid input file"
 
 int		ft_error(std::string const type, int const ret);
 
