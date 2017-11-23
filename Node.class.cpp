@@ -548,71 +548,26 @@ bool			Node::isSolvable( Node &node ) {
 	Point	*tmp2;
 	Node	tmpNode = node;
 	size_t	n = 0;
-	size_t	zero_position;
-
-	size_t offset = 0;
-	size_t x = 0;
-	size_t y = 0;
-	int vx = 1;
-	int vy = 0;
+	for (size_t y = 0; y < Node::size; y++) {
+		for (size_t x = 0; x < Node::size; x++) {
+			array[y * Node::size + x] = node.array[y][x];
+		}
+	}
 	for (size_t i = 0; i < Node::size * Node::size; i++) {
-		std::cout << "i:"<<i<<" v:"<< node.array[y][x] << '\n';
-		if (node.array[y][x] == 0) {
-			zero_position = i;
-			break ;
-		}
-		if (x == Node::size - offset - 1 && y == offset) {
-			vx = 0;
-			vy = 1;
-		}
-		else if (y == Node::size - offset - 1 && x == Node::size - offset - 1) {
-			vx = -1;
-			vy = 0;
-		}
-		else if (i > 0 && x == offset && y == Node::size - offset - 1) {
-			vx = 0;
-			vy = -1;
-		}
-		else if (i > 0 && y == offset+1 && x == offset) {
-			vx = 1;
-			vy = 0;
-			offset++;
-			y = offset;
-			x = offset - 1;
-		}
-		x += vx;
-		y += vy;
-	}
-
-	// zero_position = node.manhattan(node.points[0]);
-
-	for ( size_t i = 0; i < Node::size * Node::size; i++ ) {
-		tmp = &tmpNode.points.find(i)->second;
-
-	// 	std::cout << tmp->toString() << '\n';
-		if ( tmp->x_current != tmp->x_final || tmp->y_current != tmp->y_final ) {
-			tmp2 = &tmpNode.points[tmpNode.array[tmp->y_final][tmp->x_final ]];
-			tmpNode.array[tmp->y_current][tmp->x_current ] = tmp2->value;
-			Point::swapPoint( *tmp, *tmp2 );
-			tmpNode.array[tmp->y_final][tmp->x_final ] = tmp->value;
-			n++;
+		for (size_t j = i + 1; j < Node::size * Node::size; j++) {
+			if (array[i] && array[j] && array[i] > array[j]) {
+				n++;
+			}
 		}
 	}
-	std::cout << "n:" << n << " zero_position:" << zero_position << '\n';
-	// std::cout << tmpNode.toString() << '\n';
-	// std::cout << "((n / 2) & 1 && zero_position & 1):" << ((n / 2) & 1 && zero_position & 1) << '\n';
-	// std::cout << "(!((n / 2) & 1) && !(zero_position & 1)):" << !(!((n / 2) & 1) && !(zero_position & 1)) << '\n';
-	// printf("%d\n", (n / 2) & 1);
-	// printf("%d\n", zero_position & 1);
-	if ((Node::size & 1))
-		return (!(n & 1));
+	if (Node::size & 1)
+		return (n & 1);
 	else {
 		if ((Node::size - 1 - node.points[0].y_current) & 1)
-			return (!(n & 1));
-		else
 			return (n & 1);
+		else
+			return (!(n & 1));
 	}
-	// return ((( || (n / 2) & 1) && zero_position & 1) || (!((n / 2) & 1) && !(zero_position & 1)));
 }
 
 const char	*Node::MissingMemberException::what( void ) const throw() {

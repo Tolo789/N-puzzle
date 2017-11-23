@@ -75,6 +75,9 @@ int				main(int ac, char **av) {
 			if ( !Node::isSolvable(*startNode) ) {
 				std::cout << "Puzzle not solvable." << '\n';
 				return (0);
+			} else {
+				std::cout << "Puzzle solvable." << '\n';
+				return (0);
 			}
 		}
 		catch (Node::MissingMemberException & e) {
