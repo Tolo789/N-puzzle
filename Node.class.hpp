@@ -41,9 +41,10 @@ public:
 	bool	operator<( const Node& rhs );
 	bool	operator==( const Node& rhs );
 
-	void			updateScore(void);
-	std::string		toString(void);
-	static bool		isSolvable( Node &node );
+	void				updateScore(void);
+	std::string			toString(void);
+	static bool			isSolvable( Node &node );
+	static std::string	getHash( Node &node);
 
 	/* Exception */
 	class MissingMemberException : std::exception {

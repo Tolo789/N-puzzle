@@ -554,6 +554,17 @@ bool			Node::isSolvable( Node &node ) {
 	}
 }
 
+std::string		Node::getHash( Node &node ) {
+	std::stringstream	s;
+
+	for (size_t y = 0; y < Node::size; y++) {
+		for (size_t x = 0; x < Node::size; x++) {
+			s << node.array[y][x] << ",";
+		}
+	}
+	return (s.str());
+}
+
 const char	*Node::MissingMemberException::what( void ) const throw() {
 	return (BAD_MEMBER);
 }
