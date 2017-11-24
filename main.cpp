@@ -86,5 +86,6 @@ int				main(int ac, char **av) {
 	std::cout << "Total number of states: " << Env::totalNumberOfStates << std::endl;
 	std::cout << "Max number of states: " << Env::maxNumberOfState << std::endl;
 	std::cout << "Number of move: " << Env::numberOfMove << std::endl;
+
 	return 0;
 }

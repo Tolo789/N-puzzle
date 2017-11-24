@@ -51,18 +51,35 @@ static std::vector<Node *>::iterator getNodeInVector(std::vector<Node *> &myVect
 	return it;
 }
 
+static std::vector<Node *>::iterator getBestNodePositionDico(std::vector<Node *> &myVector, Node &node) {
+	size_t bottom = 0;
+	size_t top = myVector.size();
+	size_t index = (top + bottom) / 2;
 
-static std::vector<Node *>::iterator getBestNode(std::vector<Node *> &myVector) {
-	std::vector<Node *>::iterator best = myVector.begin();
-	std::vector<Node *>::iterator it = myVector.begin();
-
-	while (it != myVector.end()) {
-		if (**it < **best)
-			best = it;
-		it++;
+	// Preliminary checks
+	if (top > 0) {
+		if (node < **(myVector.begin()))
+			return myVector.begin();
+		if (**(myVector.end() - 1) < node)
+			return myVector.end();
 	}
+	else
+		return myVector.begin();
 
-	return best;
+	do {
+		if (*myVector[index] < node) { // look on the left side
+			bottom = index + 1;
+		}
+		else if (node < *myVector[index]) { // look on the right side
+			top = index - 1;
+		}
+		else { // good spot found
+			break;
+		}
+		index = (top + bottom) / 2;
+	} while (index != bottom);
+
+	return myVector.begin() + index;
 }
 
 static Node		*swapNode(Node *original, int const direction) {
@@ -118,7 +135,7 @@ void		runAStar(Node *startNode) {
 	Node *newNode;
 	int i; // counter for swaps in 4 directions
 	do {
-		it = getBestNode(openList);
+		it = openList.begin();
 		tmpNode = *it;
 
 		// Remove node from openList and put in closedList
@@ -146,7 +163,9 @@ void		runAStar(Node *startNode) {
 				if (itclosed == closedList.end()) {
 					it = getNodeInVector(openList, newNode);
 					if (it == openList.end()) {
-						openList.insert(openList.begin(), newNode);
+						it = getBestNodePositionDico(openList, *newNode);
+						openList.insert(it, newNode);
+
 						Env::totalNumberOfStates++;
 						size_t const s = openList.size();
 						if (s > Env::maxNumberOfState) {
@@ -157,11 +176,14 @@ void		runAStar(Node *startNode) {
 						// If already in openList then check if depth is less, if so update prev node
 						// This is only useful with not admissible heuristics, classic A* heur. already choose based on shortest path
 						if (newNode->depth < (*it)->depth) {
-							(*it)->depth = newNode->depth;
-							(*it)->prev = newNode->prev;
+							// replace old elem with new one
+							delete(*it);
+							openList.erase(it);
+							it = getBestNodePositionDico(openList, *newNode);
+							openList.insert(it, newNode);
 						}
-
-						delete newNode;
+						else
+							delete newNode;
 					}
 				} else {
 					// If already in openList then check if depth is less, if so update prev node
@@ -172,6 +194,12 @@ void		runAStar(Node *startNode) {
 
 						openList.insert(openList.begin(), itclosed->second);
 						closedList.erase(itclosed);
+
+						// No need to increse totalNumberOfStates because we are putting back an already counted Node
+						size_t const s = openList.size();
+						if (s > Env::maxNumberOfState) {
+							Env::maxNumberOfState = s;
+						}
 					}
 
 					delete newNode;
@@ -183,7 +211,7 @@ void		runAStar(Node *startNode) {
 	} while (openList.size() > 0);
 	// Reconstruct path to solution
 	if (tmpNode->score != 0) {
-		// std::cout << "Solution not found" << std::endl;
+		std::cout << "Solution not found" << std::endl;
 	}
 	else {
 		// std::cout << "Solution found!" << std::endl;
