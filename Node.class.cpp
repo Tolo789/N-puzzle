@@ -10,7 +10,8 @@
 #include "error.hpp"
 
 /* STATIC VARIABLES ==========================================================*/
-size_t Node::size = 3;
+size_t		Node::size = 3;
+std::string	Node::finalHash;
 
 /* CONSTRUCTORS ==============================================================*/
 
@@ -23,6 +24,7 @@ Node::Node( void ) : depth(0), prev(NULL) {
 
 	/* GENERATE FINAL MAP */
 	size_t **map = getFinalMap();
+	Node::finalHash = getHash(map);
 
 	// Copy final map on Node and create related Points
 	size_t	value;
@@ -149,6 +151,7 @@ Node::Node( std::string **input ) : depth(0), prev(NULL) {
 
 	/* GENERATE FINAL MAP */
 	size_t **map = getFinalMap();
+	Node::finalHash = getHash(map);
 
 	size_t	value;
 	size_t	*finalCoords = new size_t [2];
@@ -159,7 +162,6 @@ Node::Node( std::string **input ) : depth(0), prev(NULL) {
 			if (Node::getFinalPosition( value, map, finalCoords ) < 0) {
 				/* ERROR HANDLING */
 				throw Node::MissingMemberException();
-				// std::cout << "ERROR" << std::endl;
 			} else {
 				Point newPoint = Point(value, x, y, finalCoords[0], finalCoords[1]);
 				this->array[y][x] = value;
@@ -341,6 +343,9 @@ void			Node::updateScore(void) {
 	std::map<size_t, Point>::iterator it;
 
 	this->score = 0;
+	if (Env::options & UNIFORM) {
+		return ;
+	}
 	for (it = this->points.begin(); it != this->points.end(); it++) {
 		if ((Env::options & HEUR_MASK) == HEUR_MAN) {
 			this->score += this->manhattan(it->second);
@@ -547,19 +552,15 @@ bool			Node::isSolvable( Node &node ) {
 		return ((n & 1) == (ncpy & 1));
 	else {
 		return (((n + Node::getZero(node)) & 1) == ((ncpy + Node::getZero(nodecpy)) & 1));
-		// if ((Node::size - node.points[0].y_current) & 1)
-		// 	return ((n & 1) == (ncpy & 1));
-		// else
-		// 	return (!((n & 1) == (ncpy & 1)));
 	}
 }
 
-std::string		Node::getHash( Node &node ) {
+std::string		Node::getHash( size_t **array ) {
 	std::stringstream	s;
 
 	for (size_t y = 0; y < Node::size; y++) {
 		for (size_t x = 0; x < Node::size; x++) {
-			s << node.array[y][x] << ",";
+			s << array[y][x] << ",";
 		}
 	}
 	return (s.str());

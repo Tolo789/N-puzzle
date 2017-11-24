@@ -26,6 +26,7 @@ protected:
 
 public:
 	static size_t			size;
+	static std::string		finalHash;
 	size_t					depth;	// g()
 	size_t					score;	// h()
 	std::map<size_t, Point>	points;
@@ -44,7 +45,7 @@ public:
 	void				updateScore(void);
 	std::string			toString(void);
 	static bool			isSolvable( Node &node );
-	static std::string	getHash( Node &node);
+	static std::string	getHash( size_t **array );
 
 	/* Exception */
 	class MissingMemberException : std::exception {

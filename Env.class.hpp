@@ -13,6 +13,7 @@
 # define	HELP			0x0040
 # define	SLOW_PRINT		0x0080
 # define	GREEDY			0x0100
+# define	UNIFORM			0x0200
 
 # define	HEUR_CHAR		'e'
 # define	SIZE_CHAR		's'
@@ -20,13 +21,14 @@
 # define	HELP_CHAR		'h'
 # define	SLOW_PRINT_CHAR	'p'
 # define	GREEDY_CHAR		'g'
+# define	UNIFORM_CHAR	'u'
 
 # define	HEUR_MAN_STR	"man"
 # define	HEUR_2_STR		"linear"
 # define	HEUR_3_STR		"misplaced"
 # define	HEUR_4_STR		"all"
 
-# define	PARAMS_STR		"hesipg"
+# define	PARAMS_STR		"hesipgu"
 
 /* MASKS */
 # define	HEUR_MASK		0x000f

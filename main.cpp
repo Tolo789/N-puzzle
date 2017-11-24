@@ -38,7 +38,8 @@ static int		usage(char const *bin) {
 	std::cout << "Options:" << std::endl;
 	std::cout << "  -" << HELP_CHAR << " : display help menu and exits." << std::endl;
 	std::cout << "  -" << SLOW_PRINT_CHAR << " <speed> (min: 1, max: 5000) : display slowly the solution." << std::endl;
-	std::cout << "  -" << GREEDY_CHAR << " : activate greedy search." << std::endl;
+	std::cout << "  -" << GREEDY_CHAR << " : activate greedy search. (can't be used with -"<< UNIFORM_CHAR <<")" << std::endl;
+	std::cout << "  -" << UNIFORM_CHAR << " : activate uniform-cost search. (can't be used with -"<< GREEDY_CHAR <<")" << std::endl;
 	std::cout << "  -" << HEUR_CHAR << " <heuristic> : (default: man)" << std::endl;
 	std::cout << "    heuristics:" << std::endl;
 	std::cout << "      '" << HEUR_MAN_STR << "' : Manhattan" << std::endl;

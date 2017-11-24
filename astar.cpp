@@ -139,13 +139,12 @@ void		runAStar(Node *startNode) {
 		tmpNode = *it;
 
 		// Remove node from openList and put in closedList
-		// std::cout << Node::getHash(*tmpNode) << '\n';
 		// closedList.insert(closedList.begin(), tmpNode);
-		closedList.insert(std::pair<std::string, Node*>(Node::getHash(*tmpNode), tmpNode)); //////////////
+		closedList.insert(std::pair<std::string, Node*>(Node::getHash(tmpNode->array), tmpNode)); //////////////
 		openList.erase(it);
 
 		// check if node is goal, if so exit loop
-		if (tmpNode->score == 0) {
+		if (/*tmpNode->score == 0 && */Node::finalHash == Node::getHash(tmpNode->array)) {
 			break;
 		}
 
@@ -159,7 +158,7 @@ void		runAStar(Node *startNode) {
 
 				newNode = swapNode(tmpNode, i);
 				// it = getNodeInVector(closedList, newNode);
-				itclosed = closedList.find(Node::getHash(*newNode));
+				itclosed = closedList.find(Node::getHash(newNode->array));
 				if (itclosed == closedList.end()) {
 					it = getNodeInVector(openList, newNode);
 					if (it == openList.end()) {

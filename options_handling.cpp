@@ -7,8 +7,6 @@
 #include "error.hpp"
 #include "tools.hpp"
 
-// #include <stdio.h>
-
 static void	del_null_params(int *ac, char **av, int offset) {
 	int		i;
 	int		n;
@@ -34,7 +32,6 @@ static void	del_null_params(int *ac, char **av, int offset) {
 }
 
 static int	setHeuristic(char const *param) {
-	std::cout << Env::options << '\n';
 	if (!param) {
 		return (ft_error(UNKNOWN_OPTION, -1));
 	} else if (Env::options & HEUR_MASK) {
@@ -119,8 +116,21 @@ static int	setSpeed(char const *param) {
 }
 
 static int	setGreedy(void) {
-	Env::options |= GREEDY;
-	return (1);
+	if (Env::options & UNIFORM) {
+		return (ft_error(INVALID_PARAM_COMB, -1));
+	} else {
+		Env::options |= GREEDY;
+		return (1);
+	}
+}
+
+static int	setUniform(void) {
+	if (Env::options & GREEDY) {
+		return (ft_error(INVALID_PARAM_COMB, -1));
+	} else {
+		Env::options |= UNIFORM;
+		return (1);
+	}
 }
 
 static int	switch_set_options(char const *arg, char const *param) {
@@ -145,6 +155,8 @@ static int	switch_set_options(char const *arg, char const *param) {
 				return (setSpeed(param));
 			} else if (*arg == GREEDY_CHAR  && !*(arg + 1)) {
 				return (setGreedy());
+			} else if (*arg == UNIFORM_CHAR  && !*(arg + 1)) {
+				return (setUniform());
 			} else {
 				return (ft_error(UNKNOWN_OPTION, -1));
 			}
