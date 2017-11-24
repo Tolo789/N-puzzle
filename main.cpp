@@ -3,7 +3,6 @@
 #include <sstream>
 #include <iostream>
 #include <fstream>
-#include <unordered_map>
 
 #include "Node.class.hpp"
 #include "Env.class.hpp"
@@ -11,6 +10,7 @@
 #include "error.hpp"
 #include "treat_input.hpp"
 #include "astar.hpp"
+#include "astar2.hpp"
 
 static int	read_file(char const *filename, std::string *input) {
 	std::fstream		file;
@@ -83,27 +83,10 @@ int				main(int ac, char **av) {
 		}
 	}
 	runAStar(startNode);
+	runAStar2(startNode);
 	std::cout << "Total number of states: " << Env::totalNumberOfStates << std::endl;
 	std::cout << "Max number of states: " << Env::maxNumberOfState << std::endl;
 	std::cout << "Number of move: " << Env::numberOfMove << std::endl;
-
-	// TEST
-	std::unordered_map<std::string, Node*> testMap;
-
-	startNode = new Node();
-	testMap.insert(testMap.begin(), std::make_pair<std::string, Node*>("1", startNode));
-	delete startNode;
-	
-	startNode = new Node();
-	testMap.insert(testMap.begin(), std::make_pair<std::string, Node*>("2", startNode));
-	delete startNode;
-
-	startNode = new Node();
-	testMap.insert(testMap.end(), std::make_pair<std::string, Node*>("3", startNode));
-	delete startNode;
-
-	for (std::unordered_map<std::string, Node*>::iterator it=testMap.begin(); it!=testMap.end(); ++it)
-    	std::cout << it->first << ": " << std::endl;
 
 	return 0;
 }
