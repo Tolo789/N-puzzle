@@ -4,26 +4,34 @@
 # include <iostream>
 
 /* OPTIONS VALUE */
-# define	HEUR_MAN		0x01
-# define	HEUR_2			0x02
-# define	HEUR_3			0x04
-# define	SIZE			0x08
-# define	ITERATIONS		0x10
-# define	HELP			0x20
+# define	HEUR_MAN		0x0001
+# define	HEUR_2			0x0002
+# define	HEUR_3			0x0004
+# define	HEUR_4			0x0008
+# define	SIZE			0x0010
+# define	ITERATIONS		0x0020
+# define	HELP			0x0040
+# define	SLOW_PRINT		0x0080
+# define	GREEDY			0x0100
+# define	UNIFORM			0x0200
 
 # define	HEUR_CHAR		'e'
 # define	SIZE_CHAR		's'
 # define	ITERATIONS_CHAR	'i'
 # define	HELP_CHAR		'h'
+# define	SLOW_PRINT_CHAR	'p'
+# define	GREEDY_CHAR		'g'
+# define	UNIFORM_CHAR	'u'
 
 # define	HEUR_MAN_STR	"man"
-# define	HEUR_2_STR		"2"
-# define	HEUR_3_STR		"3"
+# define	HEUR_2_STR		"linear"
+# define	HEUR_3_STR		"misplaced"
+# define	HEUR_4_STR		"all"
 
-# define	PARAMS_STR		"hesi"
+# define	PARAMS_STR		"hesipgu"
 
 /* MASKS */
-# define	HEUR_MASK		0x07
+# define	HEUR_MASK		0x000f
 
 typedef struct	s_puzzle {
 	size_t	size;
@@ -41,7 +49,8 @@ private:
 protected:
 
 public:
-	static unsigned char	options;
+	static unsigned short	options;
+	static size_t			printSpeed;
 	static size_t			totalNumberOfStates;
 	static size_t			maxNumberOfState;
 	static size_t			numberOfMove;

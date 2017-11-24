@@ -9,25 +9,59 @@
 class Node {
 
 private:
-	Node( void );
+
+	size_t			**getFinalMap( void );
+	static size_t	getZero( Node &node );
+	static int		getFinalPosition( size_t const value, size_t **map, size_t *finalCoords );
+	static size_t	getInversion( Node &node );
+	size_t			manhattan(Point const &p);
+	size_t			manhattanWithLinearConflict(Point const &p);
+	size_t			manhattanLinearMisplaced(Point const &p);
+	size_t			linearConflict(Point const &p, bool horizontalSearch);
+	size_t			linearHorConflict(Point const &p);
+	size_t			linearVertConflict(Point const &p);
+	size_t			tilesMisplaced(Point const &p);
 
 protected:
 
 public:
-	size_t					size;
-	size_t					score;
+	static size_t			size;
+	static std::string		finalHash;
+	size_t					depth;	// g()
+	size_t					score;	// h()
 	std::map<size_t, Point>	points;
 	size_t					**array;
+	Node					*prev;
 
-	Node( size_t const size, std::string **input );
+	Node( void );
+	Node( std::string **input );
 	Node( Node const & src );
 	~Node( void );
 
 	Node &	operator=( Node const & rhs );
+	bool	operator<( const Node& rhs );
+	bool	operator==( const Node& rhs );
 
-	static int	getFinalPosition( size_t const value, size_t **map, size_t const size, size_t *finalCoords );
-	void			updateScore(void);
-	std::string		toString(void);
+	void				updateScore(void);
+	std::string			toString(void);
+	static bool			isSolvable( Node &node );
+	static std::string	getHash( size_t **array );
+
+	/* Exception */
+	class MissingMemberException : std::exception {
+
+	private:
+		MissingMemberException &	operator=( MissingMemberException const & rhs );
+
+	protected:
+
+	public:
+		MissingMemberException( void ) throw();
+		MissingMemberException( MissingMemberException const & src ) throw();
+		virtual const char *what( void ) const throw();
+		~MissingMemberException( void ) throw();
+
+	};
 };
 
 #endif

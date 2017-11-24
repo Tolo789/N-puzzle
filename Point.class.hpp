@@ -29,6 +29,8 @@ public:
 
 	Point &	operator=( Point const & rhs );
 
+	static void		swapPoint( Point & p1, Point & p2 );
+
 };
 
 #endif
