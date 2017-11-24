@@ -1,7 +1,7 @@
 #include "Env.class.hpp"
 
 /* STATIC VARIABLES ==========================================================*/
-unsigned char	Env::options = 0;
+unsigned short	Env::options = 0;
 size_t			Env::printSpeed = 500;
 size_t			Env::totalNumberOfStates = 0;
 size_t			Env::maxNumberOfState = 0;

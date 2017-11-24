@@ -36,15 +36,16 @@ static int	read_file(char const *filename, std::string *input) {
 static int		usage(char const *bin) {
 	std::cout << "Usage: " << bin << " [options] [input_file]" << std::endl << std::endl;
 	std::cout << "Options:" << std::endl;
+	std::cout << "  -" << HELP_CHAR << " : display help menu and exits." << std::endl;
 	std::cout << "  -" << SLOW_PRINT_CHAR << " <speed> (min: 1, max: 5000) : display slowly the solution." << std::endl;
-	std::cout << "  -" << HELP_CHAR << ": display help menu and exits." << std::endl;
-	std::cout << "  -" << HEUR_CHAR << " <heuristic>: (default: man)" << std::endl;
+	std::cout << "  -" << GREEDY_CHAR << " : activate greedy search." << std::endl;
+	std::cout << "  -" << HEUR_CHAR << " <heuristic> : (default: man)" << std::endl;
 	std::cout << "    heuristics:" << std::endl;
 	std::cout << "      '" << HEUR_MAN_STR << "' : Manhattan" << std::endl;
 	std::cout << "      '" << HEUR_2_STR << "' : Manhattan with linear conflict" << std::endl;
 	std::cout << "      '" << HEUR_3_STR << "' : Misplaced tiles" << std::endl;
 	std::cout << "      '" << HEUR_4_STR << "' : Manhattan with linear conflict and misplaced tiles" << std::endl;
-	std::cout << "  /* If you don't provide any input file */" << std::endl;
+	std::cout << std::endl << "  /* If you don't provide any input file */" << std::endl;
 	std::cout << "  -" << SIZE_CHAR << " <size> (min: 2, max: 100, default: 3): set a size for a random generated puzzle" << std::endl;
 	std::cout << "  -" << ITERATIONS_CHAR << " <iterations> (default: 10000): set a number of iterations for a random generated puzzle" << std::endl;
 	return (1);

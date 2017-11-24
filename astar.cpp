@@ -67,7 +67,7 @@ static std::vector<Node *>::iterator getBestNode(std::vector<Node *> &myVector) 
 
 static Node		*swapNode(Node *original, int const direction) {
 	Node *newNode = new Node(*original);
-	newNode->depth += 1;
+	newNode->depth += Env::options & GREEDY ? 0 : 1;
 	newNode->prev = original;
 
 	Point &zero = newNode->points[0];
@@ -198,7 +198,7 @@ void		runAStar(Node *startNode) {
 			if (Env::options & SLOW_PRINT) {
 				std::system("clear");
 			}
-			// std::cout << (*i)->toString() << std::endl;
+			std::cout << (*i)->toString() << std::endl;
 			if (Env::options & SLOW_PRINT) {
 				std::this_thread::sleep_for(std::chrono::milliseconds(Env::printSpeed));
 			}

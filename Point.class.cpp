@@ -58,12 +58,14 @@ std::string		Point::toString(void) const {
 }
 
 void			Point::swapPoint( Point & p1, Point & p2 ) {
-	p1.x_current ^= p2.x_current;
-	p2.x_current ^= p1.x_current;
-	p1.x_current ^= p2.x_current;
-	p1.y_current ^= p2.y_current;
-	p2.y_current ^= p1.y_current;
-	p1.y_current ^= p2.y_current;
+	size_t	tmp;
+
+	tmp = p1.x_current;
+	p1.x_current = p2.x_current;
+	p2.x_current = tmp;
+	tmp = p1.y_current;
+	p1.y_current = p2.y_current;
+	p2.y_current = tmp;
 }
 
 /* NON MEMBER FUNCTIONS ======================================================*/
