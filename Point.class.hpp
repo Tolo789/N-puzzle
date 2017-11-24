@@ -1,8 +1,6 @@
 #ifndef POINT_CLASS_HPP
 # define POINT_CLASS_HPP
 
-# include <iostream>
-
 class Point {
 
 private:

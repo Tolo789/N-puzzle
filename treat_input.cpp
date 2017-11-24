@@ -1,8 +1,5 @@
-#include <string>
 #include <sstream>
-#include <iostream>
 #include <vector>
-#include <string.h>
 
 #include "error.hpp"
 #include "tools.hpp"

@@ -37,7 +37,6 @@ Point		&Point::operator=( Point const & rhs ) {
 	return ( *this );
 }
 
-
 /* DESTRUCTOR ================================================================*/
 Point::~Point( void ) {
 }

@@ -14,9 +14,6 @@ Env::Env( void ) {
 }
 
 /* MEMBER OPERATORS OVERLOAD =================================================*/
-// Env		&Env::operator=( Env const & rhs ) {
-// 	return (rhs);
-// }
 
 
 /* DESTRUCTOR ================================================================*/

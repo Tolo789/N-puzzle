@@ -1,24 +1,18 @@
 #include <vector>
-#include <iostream>
-#include <sstream>
-#include <algorithm>
 #include <list>
 #include <chrono>
 #include <thread>
+
 #include "Env.class.hpp"
 #include "astar.hpp"
 
 static void	clearNodeVector(std::vector<Node *> &myVector) {
-	// std::cout << "Vector size before clearing: " << myVector.size() << std::endl;
-
 	std::vector<Node *>::iterator it;
 	while (myVector.size() > 0) {
 		it = myVector.begin();
 		delete(*it);
 		myVector.erase(it);
 	}
-
-	// std::cout << "Vector size after clearing: " << myVector.size() << std::endl << std::endl;
 }
 
 static void	clearClosedList(std::map<std::string, Node*> &closedList) {
@@ -28,17 +22,7 @@ static void	clearClosedList(std::map<std::string, Node*> &closedList) {
 		delete it->second;
 		closedList.erase(it);
 	}
-
-	// std::cout << "Vector size after clearing: " << myVector.size() << std::endl << std::endl;
 }
-
-// static void printNodeVector(std::vector<Node *> &myVector) {
-// 	std::vector<Node *>::iterator it = myVector.begin();
-// 	while (it != myVector.end()) {
-// 		std::cout << (*it)->toString() << std::endl;
-// 		it++;
-// 	}
-// }
 
 static std::vector<Node *>::iterator getNodeInVector(std::vector<Node *> &myVector, Node *targetNode) {
 	std::vector<Node *>::iterator it = myVector.begin();
@@ -47,7 +31,6 @@ static std::vector<Node *>::iterator getNodeInVector(std::vector<Node *> &myVect
 			return it;
 		it++;
 	}
-
 	return it;
 }
 
@@ -123,8 +106,7 @@ static Node		*swapNode(Node *original, int const direction) {
 void		runAStar(Node *startNode) {
 	// A* begin
 	std::vector<Node *> openList;
-	// std::vector<Node *> closedList;
-	std::map<std::string, Node*> closedList; ///////////////////////
+	std::map<std::string, Node*> closedList;
 	std::map<std::string, Node*>::iterator	itclosed;
 	std::vector<Node *>::iterator it;
 	it = openList.begin();
@@ -139,12 +121,11 @@ void		runAStar(Node *startNode) {
 		tmpNode = *it;
 
 		// Remove node from openList and put in closedList
-		// closedList.insert(closedList.begin(), tmpNode);
-		closedList.insert(std::pair<std::string, Node*>(Node::getHash(tmpNode->array), tmpNode)); //////////////
+		closedList.insert(std::pair<std::string, Node*>(Node::getHash(tmpNode->array), tmpNode));
 		openList.erase(it);
 
 		// check if node is goal, if so exit loop
-		if (/*tmpNode->score == 0 && */Node::finalHash == Node::getHash(tmpNode->array)) {
+		if (Node::finalHash == Node::getHash(tmpNode->array)) {
 			break;
 		}
 
@@ -157,14 +138,12 @@ void		runAStar(Node *startNode) {
 				(i == 3 && tmpNode->points[0].x_current != tmpNode->size - 1)) {		// right
 
 				newNode = swapNode(tmpNode, i);
-				// it = getNodeInVector(closedList, newNode);
 				itclosed = closedList.find(Node::getHash(newNode->array));
 				if (itclosed == closedList.end()) {
 					it = getNodeInVector(openList, newNode);
 					if (it == openList.end()) {
 						it = getBestNodePositionDico(openList, *newNode);
 						openList.insert(it, newNode);
-
 						Env::totalNumberOfStates++;
 						size_t const s = openList.size();
 						if (s > Env::maxNumberOfState) {
@@ -206,20 +185,17 @@ void		runAStar(Node *startNode) {
 			}
 			i++;
 		}
-
 	} while (openList.size() > 0);
 	// Reconstruct path to solution
 	if (tmpNode->score != 0) {
 		std::cout << "Solution not found" << std::endl;
 	}
 	else {
-		// std::cout << "Solution found!" << std::endl;
 		std::list<Node*>	finalList;
 		do {
 			finalList.push_front(tmpNode);
 			tmpNode = tmpNode->prev;
 		} while (tmpNode);
-
 		Env::numberOfMove = finalList.size() - 1;
 		for (std::list<Node*>::iterator i = finalList.begin(); i != finalList.end(); i++) {
 			if (Env::options & SLOW_PRINT) {
@@ -231,7 +207,6 @@ void		runAStar(Node *startNode) {
 			}
 		}
 	}
-
 	// Clear vectors
 	clearNodeVector(openList);
 	clearClosedList(closedList);

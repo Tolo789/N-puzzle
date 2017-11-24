@@ -360,7 +360,6 @@ void			Node::updateScore(void) {
 			this->score += this->manhattanLinearMisplaced(it->second);
 		}
 	}
-
 	return ;
 }
 
