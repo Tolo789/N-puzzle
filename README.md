@@ -16,13 +16,13 @@ The program must folllow the following constraints:
 $> ./n-puzzle [options] [input_file]
 
 #### Options
-  - -p _speed (min: 1, max: 5000)  ->  display slowly the solution.
   - -h  ->  display help menu and exits.
+  - -p _speed (min: 1, max: 5000)  ->  display slowly the solution.
+  - -g  ->  use greedy search (can't be used with -u)
+  - -u  ->  use uniform-cost search (can't be used with -g)
   - -e _heuristic  ->  use one heuristic: 'man' (for Manhattan distance), 'linear' (for Manhattan with linear conflict), 'misplaced' (for Misplaced tiles), 'all' (for Manhattan with linear conflict and misplaced tiles)
   - -s _size (min: 2, max: 100, default: 3)  ->  If you don't provide any input file, set a size for a random generated puzzle
   - -i _iterations (default: 10000)  ->  If you don't provide any input file, set a number of iterations for a random generated puzzle
-  - -u  -> use uniform-cost search
-  - -g  -> use greedy search
 
 ### Notes
 - The 'all' heuristic is not an admissible one, but is the fastest one
