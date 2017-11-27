@@ -441,7 +441,7 @@ size_t		Node::linearVertConflict(Point const &p) {
 }
 
 size_t			Node::tilesMisplaced(Point const &p) {
-	// Evolved manhattanLinear where we add number of tiles out of place
+	// Simply count number of tiles out of place
 	size_t	ret = 0;
 
 	if (p.value > 0) {
