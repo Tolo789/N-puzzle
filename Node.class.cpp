@@ -16,6 +16,7 @@ std::string	Node::finalHash;
 /* CONSTRUCTORS ==============================================================*/
 
 Node::Node( void ) : depth(0), prev(NULL) {
+	std::cout << "Generating puzzle ..." << std::endl;
 	std::srand(std::time(0));
 	this->array = new size_t*[Node::size];
 	for (size_t i = 0; i < Node::size; i++) {

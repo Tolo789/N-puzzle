@@ -80,6 +80,7 @@ int				main(int ac, char **av) {
 			return (ft_error(e.what(), 1));
 		}
 	}
+	std::cout << "Searching solution ..." << std::endl;
 	runAStar(startNode);
 	std::cout << "Total number of states: " << Env::totalNumberOfStates << std::endl;
 	std::cout << "Max number of states: " << Env::maxNumberOfState << std::endl;
