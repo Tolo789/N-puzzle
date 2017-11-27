@@ -24,7 +24,7 @@ static int	read_file(char const *filename, std::string *input) {
 			*input = sstream.str();
 			return ( 0 );
 		} else {
-			return ( ft_error(INVALID_FILENAME, -1) );
+			return ( -1 );
 		}
 		return ( 0 );
 	}
